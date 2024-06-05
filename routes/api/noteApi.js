@@ -1,27 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const randnumController = require('../../controller/Hrand');
+const NoteController = require('../../controller/Hnote');
 const verifyRoles = require('../../middleware/verifyRoles');
 
-router.route('/')
-    .get(randnumController.getrand);
 
-router.route('/get')
-    .get(randnumController.setrand);
+router.route('/')
+    .get(NoteController.HgetallUser);
+
+router.route('/create')
+    .post(NoteController.Hcreate);
+
+router.route('/update')
+    .post(NoteController.Hupdate);
+
+router.route('/delete')
+    .delete(NoteController.Hdelete);
 
 router.route('/all')
-    .get(verifyRoles(['Editor']), randnumController.getAll);
+    .get(verifyRoles(['Editor']), NoteController.Hgetall);
 
-/*
-router.route('/check')
-    .get(verifyRoles(ROLES_LIST.Editor), randnumController.checkDupilcate);
 
-router.route('/admincmd')
-    .get(verifyRoles(ROLES_LIST.Admin), randnumController.adminGive);
 
-router.route('/giveBy')
-    .get(verifyRoles(ROLES_LIST.Editor) , randnumController.giveBy);
-
-*/
 
 module.exports = router;

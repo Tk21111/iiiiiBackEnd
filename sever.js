@@ -44,7 +44,7 @@ app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logOut'));
 
 app.use(verifyJWT);
-app.use('/randnum', require('./routes/api/noteApi'));
+app.use('/note', require('./routes/api/noteApi'));
 
 app.all('*', (req, res) => {
     res.status(404);

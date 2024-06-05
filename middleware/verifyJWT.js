@@ -12,7 +12,7 @@ const verifyJWT = (req, res, next) => {
     //const cookie = req.cookies
     //console.log(cookie.jwt)
     //console.log(token)
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
         if (err) {
             return res.status(403).json({
                 message: 'Invalid token: ' + err + decoded

@@ -9,7 +9,7 @@ const Hrefresh = (req, res) => {
 
     jwt.verify(
         refreshToken,
-        process.env.REFRESH_TOKEN_SECRET,
+        process.env.REFRESH_TOKEN,
         async (err, decoded) => {
             if (err) return res.status(403).json({ message: 'Forbidden' })
 
@@ -24,7 +24,7 @@ const Hrefresh = (req, res) => {
                         "roles": foundUser.roles
                     }
                 },
-                process.env.ACCESS_TOKEN_SECRET,
+                process.env.ACCESS_TOKEN,
                 { expiresIn: '15m' }
             )
 

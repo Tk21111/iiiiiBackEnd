@@ -18,14 +18,13 @@ const Hauth = async(req, res) => {
                 "username": found.username,
                 "roles": roles,
             }
-        }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
-        const refreshToken = jwt.sign({ "username": found.username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+        }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
+        const refreshToken = jwt.sign({ "username": found.username }, process.env.REFRESH_TOKEN, { expiresIn: '7d' });
 
-        console.log(result);
 
         res.cookie('jwt', refreshToken, {
             httpOnly: true,
-            secure: true,
+            secure: false,
             sameSite: 'None',
             maxAge: 24 * 60 * 60 * 1000
         });
