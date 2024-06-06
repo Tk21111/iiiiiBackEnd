@@ -17,7 +17,8 @@ router.route('/delete')
     .delete(NoteController.Hdelete);
 
 router.route('/all')
-    .get(verifyRoles(['Editor']), NoteController.Hgetall);
+    .get(//verifyRoles(['Editor']), 
+    NoteController.Hgetall);
 
 
 

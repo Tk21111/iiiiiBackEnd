@@ -25,7 +25,7 @@ const Hgetall = async (req, res) => {
     
 };
 //@user 
-
+//@get
 const HgetallUser = async (req, res) => {
     const { username } = req.body;
     if (!username) return res.status(400).json({ message: 'Missing required fields' });
@@ -41,16 +41,16 @@ const HgetallUser = async (req, res) => {
 };
 
 //@ user , context , count , done 
-
+//@post
 const Hcreate = async (req, res) => {
-    const { user, text, count, done } = req.body;
-    if (!user || !text || !count) return res.status(400).json({ message: 'Missing required fields' });
+    const { username, text, count, done } = req.body;
+    if (!username || !text || !count) return res.status(400).json({ message: 'Missing required fields' });
 
     try {
         const duplicate = await Note.findOne({ text: text }).lean().exec();
         if (duplicate) return res.status(409).json({ message: 'Note already exists' });
 
-        const foundUser = await User.findOne({ username: user }).lean().exec();
+        const foundUser = await User.findOne({ username: username }).lean().exec();
         if (!foundUser) return res.status(401).json({ message: 'User not found' });
 
         const note = await Note.create({ text, count, done, user: foundUser._id });
@@ -62,6 +62,7 @@ const Hcreate = async (req, res) => {
 };
 
 //@note_id , context , done
+//@post
 const Hupdate = async (req , res ) => {
     const {id , count , done} =req.body;
     if (!id || !count) return res.status(400).json({ message: 'Missing required fields' });
@@ -78,6 +79,7 @@ const Hupdate = async (req , res ) => {
 }
 
 //@username ,note_id
+//@delete
 const Hdelete = async (req , res) => {
     const {username , id} = req.body;
 
