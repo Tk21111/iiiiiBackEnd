@@ -1,4 +1,5 @@
 const User = require('../model/User');
+/*
 
 async function generateUniqueRandomNumber(foundUser) {
     let uniqueNumberFound = false;
@@ -110,3 +111,5 @@ const adminGive = async (req,res) => {
     res.status(200).json({'messsage' : 'done'})
 }
 module.exports = { getrand, setrand, getAll, checkDupilcate ,giveBy , adminGive};
+
+*/

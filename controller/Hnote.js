@@ -3,8 +3,8 @@ const User = require('../model/User');
 
 
 
+
 const Hgetall = async (req, res) => {
-    // Get all notes from MongoDB
     const notes = await Note.find().lean()
 
     // If no notes 
@@ -43,7 +43,7 @@ const HgetallUser = async (req, res) => {
 //@ user , context , count , done 
 //@post
 const Hcreate = async (req, res) => {
-    const { username, text, count, done } = req.body;
+    const { username, text, count , date , tag } = req.body;
     if (!username || !text || !count) return res.status(400).json({ message: 'Missing required fields' });
 
     try {
@@ -53,7 +53,7 @@ const Hcreate = async (req, res) => {
         const foundUser = await User.findOne({ username: username }).lean().exec();
         if (!foundUser) return res.status(401).json({ message: 'User not found' });
 
-        const note = await Note.create({ text, count, done, user: foundUser._id });
+        const note = await Note.create({ text, count, user: foundUser._id , timeOut : date , tag});
         return res.status(201).json({ message: 'Created', note });
     } catch (error) {
         console.error(error);
@@ -63,8 +63,9 @@ const Hcreate = async (req, res) => {
 
 //@note_id , context , done
 //@post
+
 const Hupdate = async (req , res ) => {
-    const {id , count , done} =req.body;
+    const {id , count , date} =req.body;
     if (!id || !count) return res.status(400).json({ message: 'Missing required fields' });
 
     const foundNote = await Note.findById(id)

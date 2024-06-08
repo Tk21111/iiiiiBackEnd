@@ -14,6 +14,12 @@ const noteSchema = new mongoose.Schema({
         type : Number,
         require : true
     },
+    timeOut : {
+        type : Date
+    },
+    tag : {
+        type : [String]
+    },
     done : {
         type : Boolean,
         default : false
