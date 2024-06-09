@@ -5,7 +5,8 @@ const verifyRoles = require('../../middleware/verifyRoles');
 
 
 router.route('/')
-    .get(NoteController.HgetallUser);
+    .patch(NoteController.HgetallUser);
+
 
 router.route('/create')
     .post(NoteController.Hcreate);
@@ -18,7 +19,7 @@ router.route('/delete')
     .delete(NoteController.Hdelete);
 
 router.route('/all')
-    .get(//verifyRoles(['Editor']), 
+    .post(//verifyRoles(['Editor']), 
     NoteController.Hgetall);
 
 

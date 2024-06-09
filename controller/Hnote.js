@@ -25,19 +25,24 @@ const Hgetall = async (req, res) => {
     
 };
 //@user 
-//@get
+//@POST
 const HgetallUser = async (req, res) => {
-    const { username } = req.body;
-    if (!username) return res.status(400).json({ message: 'Missing required fields' });
+    const name = req.body.username;
+
+    if (!name) return res.status(400).json({ message: 'Missing required fields' });
 
     try {
-       const user_id = await User.findOne({username : username}).exec();
+       const user_id = await User.findOne({username : name}).exec();
        const result  = await Note.find({user : user_id});
+       //const result = {'done' : false , 'count' : 5}
+       console.log(result)
         res.json(result)
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
+
+
 };
 
 //@ user , context , count , done 
