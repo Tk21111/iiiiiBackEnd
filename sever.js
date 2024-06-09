@@ -45,6 +45,8 @@ app.use('/logout', require('./routes/logOut'));
 
 app.use(verifyJWT);
 app.use('/note', require('./routes/api/noteApi'));
+app.use('/location', require('./routes/api/locaApi'));
+
 
 app.all('*', (req, res) => {
     res.status(404);
