@@ -11,10 +11,10 @@ router.route('/')
 router.route('/create')
     .post(NoteController.Hcreate);
 
-/*
+
 router.route('/update')
-    .post(NoteController.Hupdate);
-*/
+    .patch(NoteController.Hupdate);
+
 router.route('/delete')
     .delete(NoteController.Hdelete);
 

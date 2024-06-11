@@ -25,7 +25,7 @@ const Hgetall = async (req, res) => {
     
 };
 //@user 
-//@POST
+//@patch
 const HgetallUser = async (req, res) => {
     const name = req.body.username;
 
@@ -70,13 +70,15 @@ const Hcreate = async (req, res) => {
 //@post
 
 const Hupdate = async (req , res ) => {
-    const {id , count , date} =req.body;
+    const {id , count , count_Exp , date ,done} =req.body;
     if (!id || !count) return res.status(400).json({ message: 'Missing required fields' });
 
     const foundNote = await Note.findById(id)
     if (!foundNote) return res.status(404).json({ message : "Didn't find note"});
     foundNote.count = count
     foundNote.done = done
+    foundNote.countExp = count_Exp
+    foundNote.timeOut = date
 
     foundNote.save();
 
