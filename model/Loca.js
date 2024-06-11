@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const noteSchema = new mongoose.Schema({
+const locaSchema = new mongoose.Schema({
     user : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,

@@ -9,7 +9,7 @@ const Hcreate = async (req, res) => {
 
     if (!username || !food || !town || !subdistrict || !county) {
         console.log("Missing required fields");
-        return res.status(400).json({ message: 'Missing required fields' });
+        return res.status(400).json({ message: 'Missing required fieldsหกด' });
     }
 
     const foundUser = await User.findOne({ username: username }).lean().exec();
