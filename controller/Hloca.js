@@ -1,28 +1,27 @@
 const Note = require('../model/Note');
 const User = require('../model/User');
 const Loca = require('../model/Loca');
-const { text } = require('express');
 //@ username, food , town , subdistrict , county , more
 //@post
 const Hcreate = async (req, res) => {
-    const { username, food , town , subdistrict , county , more} = req.body;
-    if (!username || !food || !town || !subdistrict || !county) return res.status(400).json({ message: 'Missing required fields' });
+    console.log("Request body:", req.body);
+    const { username, food, town, subdistrict, county, more } = req.body;
 
-    try {
-        /*
-        const duplicate = await Note.findOne({ text: text }).lean().exec();
-        if (duplicate) return res.status(409).json({ message: 'Note already exists' });
-        */
-        const foundUser = await User.findOne({ username: username }).lean().exec();
-        if (!foundUser) return res.status(401).json({ message: 'User not found' });
-
-        const loca = await Loca.create({ food, town, user: foundUser._id , subdistrict , county , more});
-        return res.status(201).json({ message: 'Created', loca });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
+    if (!username || !food || !town || !subdistrict || !county) {
+        console.log("Missing required fields");
+        return res.status(400).json({ message: 'Missing required fields' });
     }
+
+    const foundUser = await User.findOne({ username: username }).lean().exec();
+    if (!foundUser) {
+        console.log("User not found");
+        return res.status(401).json({ message: 'User not found' });
+    }
+
+    const loca = await Loca.create({ food, town, user: foundUser._id, subdistrict, county, more });
+    return res.status(201).json({ message: 'Created', loca });
 };
+
 
 //@get 
 const Hgetall = async (req, res) => {

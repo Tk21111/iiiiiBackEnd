@@ -4,19 +4,12 @@ const LocaController = require('../../controller/Hnote');
 const verifyRoles = require('../../middleware/verifyRoles');
 
 
-router.route('/create')
-    .post(LocaController.Hcreate);
-/*
-router.route('/update')
-    .post(LocaController.Hupdate);
-*/
-router.route('/delete')
-    .delete(LocaController.Hdelete);
-
 router.route('/all')
     .get( LocaController.Hgetall);
 
-
-
+router.route('/create')
+    .post(LocaController.Hcreate);
+router.route('/delete')
+    .delete(LocaController.Hdelete);
 
 module.exports = router;
