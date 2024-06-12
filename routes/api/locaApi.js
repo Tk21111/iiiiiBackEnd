@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const LocaController = require('../../controller/Hnote');
+const LocaController = require('../../controller/Hloca');
 const verifyRoles = require('../../middleware/verifyRoles');
 
 
 router.route('/all')
-    .get( LocaController.Hgetall);
+    .get( LocaController.HgetallLoca);
 router.route('/create')
-    .post(LocaController.Hcreate);
+    .post(LocaController.HcreateLoca);
 router.route('/delete')
-    .delete(LocaController.Hdelete);
+    .delete(LocaController.HdeleteLoca);
 
 module.exports = router;

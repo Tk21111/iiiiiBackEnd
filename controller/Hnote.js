@@ -28,14 +28,26 @@ const Hgetall = async (req, res) => {
 //@patch
 const HgetallUser = async (req, res) => {
     const name = req.body.username;
-
     if (!name) return res.status(400).json({ message: 'Missing required fields' });
 
     try {
-       const user_id = await User.findOne({username : name}).exec();
-       const result  = await Note.find({user : user_id});
-       //const result = {'done' : false , 'count' : 5}
-       console.log(result)
+        const userId = await User.findOne({ username: name }).select('-__v').exec();
+        const result  = await Note.find({user : userId});
+
+        res.json(result)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+
+
+};
+const HgetUser = async (req, res) => {
+    const id = req.params.id;
+    if (!id) return res.status(400).json({ message: 'Missing required fields' });
+
+    try {
+        const result  = await Note.find({ _id : id}).exec();
         res.json(result)
     } catch (error) {
         console.error(error);

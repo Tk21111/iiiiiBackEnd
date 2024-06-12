@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 
 const Hrefresh = (req, res) => {
     const cookies = req.cookies
+    //console.log(req)
+    console.log(cookies)
     if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' })
 
     const refreshToken = cookies.jwt
