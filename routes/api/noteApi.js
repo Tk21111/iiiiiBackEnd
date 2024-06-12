@@ -19,7 +19,7 @@ router.route('/delete')
     .delete(NoteController.Hdelete);
 
 router.route('/all')
-    .post(//verifyRoles(['Editor']), 
+    .get(//verifyRoles(['Editor']), 
     NoteController.Hgetall);
 
 
