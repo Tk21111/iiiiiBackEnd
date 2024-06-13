@@ -35,6 +35,7 @@ const HgetallUser = async (req, res) => {
         const result  = await Note.find({user : userId});
 
         res.json(result)
+        console.log(result)
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
@@ -79,17 +80,23 @@ const Hcreate = async (req, res) => {
 };
 
 //@note_id , context , done
-//@post
+//@patch
 
 const Hupdate = async (req , res ) => {
-    const {id , count , count_Exp , date ,done} =req.body;
-    if (!id || !count || !date || !done) return res.status(400).json({ message: 'Missing required fields' });
-
+    const {id , count , countExp , date ,done} =req.body;
+    console.log(id)
+    console.log(count)
+    console.log(date)
+    console.log(done)
+    if (!id || !count || !date || (done === undefined || done === null || typeof done !== 'boolean')) {
+        console.log(400);
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
     const foundNote = await Note.findById(id)
     if (!foundNote) return res.status(404).json({ message : "Didn't find note"});
     foundNote.count = count
     foundNote.done = done
-    foundNote.countExp = count_Exp
+    foundNote.countExp = countExp
     foundNote.timeOut = date
 
     foundNote.save();
@@ -103,6 +110,7 @@ const Hupdate = async (req , res ) => {
 const Hdelete = async (req , res) => {
     const {username , id} = req.body;
 
+    console.log('Note delete func')
     if (!username || !id) return res.status(401).json({message : 'bad request'});
     const foundUser = await User.findOne({ username: username }).lean().exec();
     if (!foundUser) return res.status(401).json({ message: 'User not found' });
@@ -116,8 +124,9 @@ const Hdelete = async (req , res) => {
     if (!deleteNote) return res.status(404).json({message : 'note is not found'});
 
     const result = await deleteNote.deleteOne()
-
-    res.json({message : id + 'note deleted'})
+    console.log(result)
+    res.sendStatus(200)
+    //res.json({message : id + 'note deleted'})
 
 }
 module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HgetallUser };
