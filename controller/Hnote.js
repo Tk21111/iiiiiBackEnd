@@ -61,17 +61,22 @@ const HgetUser = async (req, res) => {
 //@ user , context , count , done 
 //@post
 const Hcreate = async (req, res) => {
-    const { username, text, count , date , tag } = req.body;
-    if (!username || !text || !count) return res.status(400).json({ message: 'Missing required fields' });
+    const { text, count , countExp, date , tag , done } = req.body;
+    const name = req.user
+    if (!name || !text  || !date || !tag ||count < 0 || countExp < 0  || done === undefined || done === null || typeof done !== 'boolean') {
+        console.log(400)
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
+
 
     try {
         const duplicate = await Note.findOne({ text: text }).lean().exec();
         if (duplicate) return res.status(409).json({ message: 'Note already exists' });
 
-        const foundUser = await User.findOne({ username: username }).lean().exec();
+        const foundUser = await User.findOne({ username: name }).lean().exec();
         if (!foundUser) return res.status(401).json({ message: 'User not found' });
 
-        const note = await Note.create({ text, count, user: foundUser._id , timeOut : date , tag});
+        const note = await Note.create({ text, count, user: foundUser._id , timeOut : date , tag , countExp , done});
         return res.status(201).json({ message: 'Created', note });
     } catch (error) {
         console.error(error);
@@ -79,16 +84,12 @@ const Hcreate = async (req, res) => {
     }
 };
 
-//@note_id , context , done
+//@note_id , text ,count , countExp ,date tag , done
 //@patch
 
 const Hupdate = async (req , res ) => {
-    const {id , count , countExp , date ,done} =req.body;
-    console.log(id)
-    console.log(count)
-    console.log(date)
-    console.log(done)
-    if (!id || !count || !date || (done === undefined || done === null || typeof done !== 'boolean')) {
+    const {text , id , count , countExp , date ,done , tag } =req.body;
+    if (!text || !id || count < 0 || countExp < 0 || !date || (done === undefined || done === null || typeof done !== 'boolean')) {
         console.log(400);
         return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -98,6 +99,8 @@ const Hupdate = async (req , res ) => {
     foundNote.done = done
     foundNote.countExp = countExp
     foundNote.timeOut = date
+    foundNote.tag = tag
+    foundNote.text = text
 
     foundNote.save();
 
@@ -108,16 +111,20 @@ const Hupdate = async (req , res ) => {
 //@username ,note_id
 //@delete
 const Hdelete = async (req , res) => {
-    const {username , id} = req.body;
+    const {id} = req.body;
+    const user = req.user;
 
     console.log('Note delete func')
-    if (!username || !id) return res.status(401).json({message : 'bad request'});
-    const foundUser = await User.findOne({ username: username }).lean().exec();
+    if (!user || !id) return res.status(401).json({message : 'bad request'});
+
+    const foundUser = await User.findOne({ username: user }).lean().exec();
     if (!foundUser) return res.status(401).json({ message: 'User not found' });
 
     const deleteNote = await Note.findById(id).exec();
 
-    if (!deleteNote.user.equals(foundUser._id)) {
+
+    if (!deleteNote?.user?.equals(foundUser._id)) {
+        console.log('NOT FOUND')
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
@@ -125,7 +132,7 @@ const Hdelete = async (req , res) => {
 
     const result = await deleteNote.deleteOne()
     console.log(result)
-    res.sendStatus(200)
+    res.status(200).json({message : "deleted"})
     //res.json({message : id + 'note deleted'})
 
 }
