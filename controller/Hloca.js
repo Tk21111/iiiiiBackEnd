@@ -4,7 +4,6 @@ const Loca = require('../model/Loca');
 //@ username, food , town , subdistrict , county , more
 //@post
 const HcreateLoca = async (req, res) => {
-    console.log("Request body:", req);
     const name = req.user;
     const { food, town, subdistrict, county, more } = req.body;
     console.log(req.body)
@@ -50,14 +49,59 @@ const HgetallLoca = async (req, res) => {
     res.json(notesWithUser)    
 };
 
+//@ req.user
+//@patch
+const HgetallUserLoca = async (req, res) => {
+    const name = req.user;
+    if (!name) return res.status(400).json({ message: 'Missing required fields' });
+
+    try {
+        const userId = await User.findOne({ username: name }).select('-__v').exec();
+        const result  = await Loca.find({user : userId});
+
+        res.json(result)
+        console.log(result)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+
+
+};
+//@patch
+
+
+const HupdateLoca = async (req , res ) => {
+    const name = req.user;
+    const { id, food, town, subdistrict, county, more } = req.body;
+    console.log(req.body)
+    console.log(name)
+    if (!id || !name || !food || !town || !subdistrict || !county) {
+        console.log("Missing required fields");
+        return res.status(400).json({ message: 'Missing required fields' });
+    }
+    const foundLoca = await Loca.findById(id)
+    if (!foundLoca) return res.status(404).json({ message : "Didn't find note"});
+    foundLoca.town = town
+    foundLoca.subdistrict = subdistrict
+    foundLoca.county = county
+    foundLoca.more = more
+    foundLoca.save();
+
+    res.status(200).json({ message : 'note have been update'})
+
+}
+
 //@ loca_id
 //@delete
+
 const HdeleteLoca = async (req , res) => {
     const {id} = req.body;
-
+    const name = req.user;
     if (!id) return res.status(401).json({message : 'bad request'});
     const deleteLoca = await Loca.findById(id).exec();
 
+    const foundUser = await User.findOne({username : name }).lean().exec();
     if (!deleteLoca.user.equals(foundUser._id)) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -65,9 +109,11 @@ const HdeleteLoca = async (req , res) => {
     if (!deleteLoca) return res.status(404).json({message : 'note is not found'});
 
     const result = await deleteLoca.deleteOne()
-
+    console.log(result)
     res.json({message : id + 'note deleted'})
 
 }
 
-module.exports = { HcreateLoca , HgetallLoca , HdeleteLoca};
+module.exports = { HcreateLoca , HgetallLoca , HdeleteLoca , HgetallUserLoca , HupdateLoca
+
+};

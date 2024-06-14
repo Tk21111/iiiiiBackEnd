@@ -43,20 +43,7 @@ const HgetallUser = async (req, res) => {
 
 
 };
-const HgetUser = async (req, res) => {
-    const id = req.params.id;
-    if (!id) return res.status(400).json({ message: 'Missing required fields' });
 
-    try {
-        const result  = await Note.find({ _id : id}).exec();
-        res.json(result)
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-
-
-};
 
 //@ user , context , count , done 
 //@post
