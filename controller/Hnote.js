@@ -36,7 +36,7 @@ const HgetallUser = async (req, res) => {
         const result  = await Note.find({user : userId});
 
         res.json(result)
-        console.log(result)
+        //console.log(result)
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
@@ -102,7 +102,7 @@ const Hdelete = async (req , res) => {
     const {id} = req.body;
     const user = req.user;
 
-    console.log('Note delete func')
+    //console.log('Note delete func')
     if (!user || !id) return res.status(401).json({message : 'bad request'});
 
     const foundUser = await User.findOne({ username: user }).lean().exec();
@@ -116,11 +116,16 @@ const Hdelete = async (req , res) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    if (!deleteNote || !deleteLoca) return res.status(404).json({message : 'note is not found'});
+    if (!deleteNote) return res.status(404).json({message : 'note is not found'});
 
-    await deleteLoca.deleteOne();
+    try {
+        await deleteLoca.deleteOne();
+    } catch {
+        console.log('No location post boned')
+    }
+    
     const result = await deleteNote.deleteOne();
-    console.log(result)
+    //console.log(result)
     res.status(200).json({message : "deleted"})
     //res.json({message : id + 'note deleted'})
 

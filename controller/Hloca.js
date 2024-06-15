@@ -112,7 +112,7 @@ const HdeleteLoca = async (req , res) => {
     if (!deleteLoca) return res.status(404).json({message : 'note is not found'});
 
     const result = await deleteLoca.deleteOne()
-    console.log(result)
+    //console.log(result)
     res.json({message : id + 'note deleted'})
 
 }
