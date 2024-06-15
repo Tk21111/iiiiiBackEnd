@@ -1,5 +1,6 @@
 const Note = require('../model/Note');
 const User = require('../model/User');
+const Loca = require('../model/Loca')
 
 
 
@@ -108,16 +109,17 @@ const Hdelete = async (req , res) => {
     if (!foundUser) return res.status(401).json({ message: 'User not found' });
 
     const deleteNote = await Note.findById(id).exec();
-
+    const deleteLoca = await Loca.findOne({food : id }).exec();
 
     if (!deleteNote?.user?.equals(foundUser._id)) {
         console.log('NOT FOUND')
         return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    if (!deleteNote) return res.status(404).json({message : 'note is not found'});
+    if (!deleteNote || !deleteLoca) return res.status(404).json({message : 'note is not found'});
 
-    const result = await deleteNote.deleteOne()
+    await deleteLoca.deleteOne();
+    const result = await deleteNote.deleteOne();
     console.log(result)
     res.status(200).json({message : "deleted"})
     //res.json({message : id + 'note deleted'})
