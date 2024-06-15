@@ -98,7 +98,10 @@ const HupdateLoca = async (req , res ) => {
 const HdeleteLoca = async (req , res) => {
     const {id} = req.body;
     const name = req.user;
-    if (!id) return res.status(401).json({message : 'bad request'});
+    if (!id) {
+        console.log(400)
+        return res.status(401).json({message : 'bad request'});
+    }
     const deleteLoca = await Loca.findById(id).exec();
 
     const foundUser = await User.findOne({username : name }).lean().exec();
