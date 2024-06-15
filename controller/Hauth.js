@@ -13,21 +13,31 @@ const Hauth = async(req, res) => {
         
         //jwts
 
-        const accessToken = jwt.sign({
-            "userinfo": {
-                "username": found.username,
-                "roles": roles,
-            }
-        }, process.env.ACCESS_TOKEN, { expiresIn: '1h' });
-        const refreshToken = jwt.sign({ "username": found.username }, process.env.REFRESH_TOKEN, { expiresIn: '7d' });
+        const accessToken = jwt.sign(
+            {
+                "userinfo": {
+                    "username": found.username,
+                    "roles": roles,
+                }
+            }, 
+            process.env.ACCESS_TOKEN, 
+            { expiresIn: '1h' });
+
+
+        const refreshToken = jwt.sign(
+            {
+                 "username": found.username 
+                }, process.env.REFRESH_TOKEN, 
+                { expiresIn: '7d' });
 
 
         res.cookie('jwt', refreshToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'None',
-            maxAge: 24 * 60 * 60 * 1000
+            secure: process.env.NODE_ENV === 'production', // Ensure secure is true in production
+            sameSite: 'None', // Required for cross-site cookies
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
+                
 
         res.status(200).json({ accessToken });
     } else {

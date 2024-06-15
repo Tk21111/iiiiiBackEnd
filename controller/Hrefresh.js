@@ -3,10 +3,11 @@ const jwt = require('jsonwebtoken');
 
 const Hrefresh = (req, res) => {
     const cookies = req.cookies
-    //console.log(req)
-    console.log(cookies)
+    console.log(res)
+    console.log('-------------------')
+    console.log(req)
     if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' })
-
+    console.log('fs')
     const refreshToken = cookies.jwt
 
     jwt.verify(
@@ -17,7 +18,7 @@ const Hrefresh = (req, res) => {
 
             const foundUser = await User.findOne({ username: decoded.username }).exec()
 
-            if (!foundUser) return res.status(401).json({ message: 'Unauthorized' })
+            if (!foundUser) return res.status(401).json({ message: 'Unauthorizead' })
 
             const accessToken = jwt.sign(
                 {
