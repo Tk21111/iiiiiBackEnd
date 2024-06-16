@@ -33,7 +33,7 @@ const Hauth = async(req, res) => {
 
         res.cookie('jwt', refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Ensure secure is true in production
+            secure: true, // Ensure secure is true in production
             sameSite: 'None', // Required for cross-site cookies
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
