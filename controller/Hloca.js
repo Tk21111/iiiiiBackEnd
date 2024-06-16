@@ -50,7 +50,7 @@ const HgetallLoca = async (req, res) => {
 };
 
 //@ req.user
-//@patch
+//@get
 const HgetallUserLoca = async (req, res) => {
     const name = req.user;
     if (!name) return res.status(400).json({ message: 'Missing required fields' });
