@@ -6,8 +6,7 @@ const Loca = require('../model/Loca');
 const HcreateLoca = async (req, res) => {
     const name = req.user;
     const { food, town, subdistrict, county, more } = req.body;
-    console.log(req.body)
-    console.log(name)
+
     if (!name || !food || !town || !subdistrict || !county) {
         console.log("Missing required fields");
         return res.status(400).json({ message: 'Missing required fields' });
@@ -45,7 +44,7 @@ const HgetallLoca = async (req, res) => {
         const noteText = await Note.findById(loca.food).lean().exec()
         return { ...loca, text: noteText?.text }
     }))
-    console.log(notesWithUser)
+
     res.json(notesWithUser)    
 };
 
@@ -60,7 +59,6 @@ const HgetallUserLoca = async (req, res) => {
         const result  = await Loca.find({user : userId});
 
         res.json(result)
-        console.log(result)
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
@@ -74,8 +72,7 @@ const HgetallUserLoca = async (req, res) => {
 const HupdateLoca = async (req , res ) => {
     const name = req.user;
     const { id, food, town, subdistrict, county, more } = req.body;
-    console.log(req.body)
-    console.log(name)
+
     if (!id || !name || !food || !town || !subdistrict || !county) {
         console.log("Missing required fields");
         return res.status(400).json({ message: 'Missing required fields' });
@@ -112,7 +109,6 @@ const HdeleteLoca = async (req , res) => {
     if (!deleteLoca) return res.status(404).json({message : 'note is not found'});
 
     const result = await deleteLoca.deleteOne()
-    //console.log(result)
     res.json({message : id + 'note deleted'})
 
 }
