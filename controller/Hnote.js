@@ -59,7 +59,7 @@ const Hcreate = async (req, res) => {
 
     try {
         const duplicate = await Note.findOne({ text: text }).lean().exec();
-        if (duplicate) return res.status(409).json({ message: 'Note already exists' });
+        if (duplicate) return res.status(409).json({ noteId: duplicate._id });
 
         const foundUser = await User.findOne({ username: name }).lean().exec();
         if (!foundUser) return res.status(401).json({ message: 'User not found' });
