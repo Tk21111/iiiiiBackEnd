@@ -49,27 +49,33 @@ const HgetallUser = async (req, res) => {
 //@ user , context , count , done 
 //@post
 const Hcreate = async (req, res) => {
-    const { text, count , countExp, date , tag , done } = req.body;
-    const name = req.user
-    if (!name || !text  || !date || !tag ||count < 0 || countExp < 0  || done === undefined || done === null || typeof done !== 'boolean') {
-        console.log(400)
-        return res.status(400).json({ message: 'Missing required fields' });
-    }
-
+    const { data } = req.body;
+    let foundUser;
 
     try {
-        const duplicate = await Note.findOne({ text: text }).lean().exec();
-        if (duplicate) return res.status(409).json({ noteId: duplicate._id });
-
-        const foundUser = await User.findOne({ username: name }).lean().exec();
+        foundUser = await User.findOne({ username: data[0].username }).lean().exec();
         if (!foundUser) return res.status(401).json({ message: 'User not found' });
-
-        const note = await Note.create({ text, count, user: foundUser._id , timeOut : date , tag , countExp , done});
-        return res.status(201).json({ message: 'Created', note });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
+    } catch (err){
+        res.sendStatus(404);
     }
+
+    //check 
+
+        for (let o of data){
+                
+            const duplicate = await Note.findOne({ text: o.text }).lean().exec();
+            if (duplicate) return res.status(409).json({ noteId: duplicate._id });
+
+            try {
+                const note = await Note.create({ text : o.text, count : o.count, user: foundUser._id , timeOut : o.date , tag : o.
+                            tag , countExp : o.countExp , done : o.done});
+                return res.status(201).json({ message: 'Created', note });
+            } catch (error) {
+                res.sendStatus(400);
+            }
+                
+        }
+    ;
 };
 
 //@note_id , text ,count , countExp ,date tag , done
