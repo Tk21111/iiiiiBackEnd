@@ -1,9 +1,20 @@
 const Note = require('../model/Note');
 const User = require('../model/User');
 const Loca = require('../model/Loca')
+const multer = require('multer');
+const path = require('path');
 
 
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // specify the folder where the files should be saved
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
 
+const upload = multer({ storage: storage });
 
 const Hgetall = async (req, res) => {
     const notes = await Note.find().lean()
@@ -49,43 +60,47 @@ const HgetallUser = async (req, res) => {
 //@ user , context , count , done 
 //@post
 const Hcreate = async (req, res) => {
-    const { data } = req.body;
-
-    console.log(data)
-    let foundUser;
-
     try {
-        foundUser = await User.findOne({ username: data[0].username }).lean().exec();
-        if (!foundUser) return res.status(401).json({ message: 'User not found' });
-    } catch (err){
-        res.sendStatus(404);
-    }
-
-    //check 
-
-    if (data){
-        try {
-            for (let o of data){
-                
-                const duplicate = await Note.findOne({ text: o.text }).lean().exec();
-                if (duplicate) return res.status(409).json({ noteId: duplicate._id });
-    
-                try {
-                    const note = await Note.create({ text : o.text, count : o.count, user: foundUser._id , timeOut : o.date , tag : o.
-                                tag , countExp : o.countExp , done : o.done});
-                } catch (error) {
-                    res.sendStatus(400);
+        const notes = req.body.notes || []; //somehow this thing have obj null prototpe in it but still work i wander why
+        console.log(notes)
+        console.log(req.file || 'idk')
+        if (Array.isArray(notes)) {
+            for (let i = 0; i < notes.length; i++) {
+                const note = notes[i];
+                const foundUser = await User.findOne({ username: note.username }).lean().exec();
+                if (!foundUser) {
+                    return res.status(401).json({ message: 'User not found' });
                 }
-                    
+
+                const duplicate = await Note.findOne({ text: note.text }).lean().exec();
+                if (duplicate) {
+                    return res.status(409).json({ noteId: duplicate._id });
+                }
+
+                //file path is in req.files
+                const filePaths = req.files ? req.files.filter(file => file.fieldname.startsWith(`notes[${i}][files]`)).map(file => file.path) : [];
+
+                await Note.create({
+                    text: note.text,
+                    count: note.count,
+                    user: foundUser._id,
+                    timeOut: note.date,
+                    tag: note.tag,
+                    countExp: note.countExp,
+                    done: note.done,
+                    filePaths: filePaths
+                });
             }
-            return res.status(201).json({ message: 'Created', data });
-        } catch (err) {
-            res.status(400).json({message : err});
+            return res.status(201).json({ message: 'Created', data: notes });
+        } else {
+            return res.status(400).json({ message: 'Invalid data format' });
         }
-    } else{
-        res.sendStatus(400)
+    } catch (err) {
+        console.error('Error creating notes:', err);
+        return res.status(500).json({ message: 'Failed to create notes' });
     }
 };
+
 
 //@note_id , text ,count , countExp ,date tag , done
 //@patch
@@ -145,5 +160,5 @@ const Hdelete = async (req , res) => {
     //res.json({message : id + 'note deleted'})
 
 }
-module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HgetallUser };
+module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HgetallUser , upload};
 

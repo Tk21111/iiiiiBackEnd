@@ -26,6 +26,9 @@ const noteSchema = new mongoose.Schema({
     done : {
         type : Boolean,
         default : false
+    },
+    path : {
+        type : String
     }
 },
     {
