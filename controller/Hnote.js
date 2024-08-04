@@ -50,6 +50,8 @@ const HgetallUser = async (req, res) => {
 //@post
 const Hcreate = async (req, res) => {
     const { data } = req.body;
+
+    console.log(data)
     let foundUser;
 
     try {
@@ -61,21 +63,28 @@ const Hcreate = async (req, res) => {
 
     //check 
 
-        for (let o of data){
+    if (data){
+        try {
+            for (let o of data){
                 
-            const duplicate = await Note.findOne({ text: o.text }).lean().exec();
-            if (duplicate) return res.status(409).json({ noteId: duplicate._id });
-
-            try {
-                const note = await Note.create({ text : o.text, count : o.count, user: foundUser._id , timeOut : o.date , tag : o.
-                            tag , countExp : o.countExp , done : o.done});
-                return res.status(201).json({ message: 'Created', note });
-            } catch (error) {
-                res.sendStatus(400);
+                const duplicate = await Note.findOne({ text: o.text }).lean().exec();
+                if (duplicate) return res.status(409).json({ noteId: duplicate._id });
+    
+                try {
+                    const note = await Note.create({ text : o.text, count : o.count, user: foundUser._id , timeOut : o.date , tag : o.
+                                tag , countExp : o.countExp , done : o.done});
+                } catch (error) {
+                    res.sendStatus(400);
+                }
+                    
             }
-                
+            return res.status(201).json({ message: 'Created', data });
+        } catch (err) {
+            res.status(400).json({message : err});
         }
-    ;
+    } else{
+        res.sendStatus(400)
+    }
 };
 
 //@note_id , text ,count , countExp ,date tag , done
