@@ -35,7 +35,8 @@ app.use(express.json());
 //middleware for cookies
 app.use(cookieParser());
 
-app.use('/', express.static(path.join(__dirname, '/pubilc')));
+///pubilc/image/1722873919706.jpg
+app.use('/pubilc', express.static(path.join(__dirname, '/pubilc')));
 
 app.use('/', require('./routes/root'));
 app.use('/register', require('./routes/register'));
