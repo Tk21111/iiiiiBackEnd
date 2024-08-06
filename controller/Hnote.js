@@ -5,17 +5,6 @@ const multer = require('multer');
 const path = require('path');
 
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // specify the folder where the files should be saved
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ storage: storage });
-
 const Hgetall = async (req, res) => {
     const notes = await Note.find().lean()
 
@@ -62,8 +51,7 @@ const HgetallUser = async (req, res) => {
 const Hcreate = async (req, res) => {
     try {
         const notes = req.body.notes || []; //somehow this thing have obj null prototpe in it but still work i wander why
-        console.log(notes)
-        console.log(req.file || 'idk')
+        
         if (Array.isArray(notes)) {
             for (let i = 0; i < notes.length; i++) {
                 const note = notes[i];
@@ -88,7 +76,7 @@ const Hcreate = async (req, res) => {
                     tag: note.tag,
                     countExp: note.countExp,
                     done: note.done,
-                    filePaths: filePaths
+                    path: filePaths
                 });
             }
             return res.status(201).json({ message: 'Created', data: notes });
@@ -160,5 +148,5 @@ const Hdelete = async (req , res) => {
     //res.json({message : id + 'note deleted'})
 
 }
-module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HgetallUser , upload};
+module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HgetallUser };
 
