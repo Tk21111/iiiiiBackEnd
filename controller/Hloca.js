@@ -7,6 +7,7 @@ const HcreateLoca = async (req, res) => {
     const name = req.user;
     
     console.log(req.body)
+    console.log(req)
 
     const { food, town, subdistrict, county, more } = req.body;
     const images = req.files;
