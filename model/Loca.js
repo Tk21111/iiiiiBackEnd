@@ -25,7 +25,10 @@ const locaSchema = new mongoose.Schema({
     },
     more : {
         type :String
-    }
+    },
+    images: { 
+        type: [String] 
+    } 
 
 })
 

@@ -5,7 +5,11 @@ const Loca = require('../model/Loca');
 //@post
 const HcreateLoca = async (req, res) => {
     const name = req.user;
+    
+    console.log(req.body)
+
     const { food, town, subdistrict, county, more } = req.body;
+    const images = req.files;
 
     if (!name || !food || !town || !subdistrict || !county) {
         console.log("Missing required fields");
@@ -13,13 +17,16 @@ const HcreateLoca = async (req, res) => {
     }
 
     try {
-        const foundUser = await User.findOne({ username : name }).lean().exec();
+        const foundUser = await User.findOne({ username: name }).lean().exec();
         if (!foundUser) {
             console.log("User not found");
             return res.status(401).json({ message: 'User not found' });
         }
 
-        const loca = await Loca.create({ food, town, user: foundUser._id, subdistrict, county, more });
+        // Save image paths to the database
+        const imagePaths = images.map(file => file.path);
+
+        const loca = await Loca.create({ food, town, user: foundUser._id, subdistrict, county, more, images: imagePaths });
         return res.status(201).json({ message: 'Created', loca });
     } catch (error) {
         console.error("Error creating loca:", error);
