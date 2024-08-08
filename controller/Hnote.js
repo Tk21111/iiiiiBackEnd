@@ -2,7 +2,8 @@ const Note = require('../model/Note');
 const User = require('../model/User');
 const Loca = require('../model/Loca')
 const multer = require('multer');
-const path = require('path');
+const path = require('path');4
+const fs = require('fs')
 
 
 const Hgetall = async (req, res) => {
@@ -54,6 +55,7 @@ const Hcreate = async (req, res) => {
         
         if (Array.isArray(notes)) {
             for (let i = 0; i < notes.length; i++) {
+
                 const note = notes[i];
                 const foundUser = await User.findOne({ username: note.username }).lean().exec();
                 if (!foundUser) {
@@ -67,7 +69,7 @@ const Hcreate = async (req, res) => {
 
                 //file path is in req.files
                 const filePaths = req.files ? req.files.filter(file => file.fieldname.startsWith(`notes[${i}][files]`)).map(file => file.path) : [];
-
+                console.log(filePaths)
                 await Note.create({
                     text: note.text,
                     count: note.count,
@@ -76,7 +78,7 @@ const Hcreate = async (req, res) => {
                     tag: note.tag,
                     countExp: note.countExp,
                     done: note.done,
-                    path: filePaths
+                    images: filePaths
                 });
             }
             return res.status(201).json({ message: 'Created', data: notes });
@@ -128,6 +130,44 @@ const Hdelete = async (req , res) => {
 
     const deleteNote = await Note.findById(id).exec();
     const deleteLoca = await Loca.findOne({food : id }).exec();
+    if (deleteLoca){
+        //delete image for loca
+    deleteLoca.images.forEach( p => {
+        fs.unlink(p, (err) => {
+            if (err) {
+              // An error occurred while deleting the file
+              if (err.code === 'ENOENT') {
+                // The file does not exist
+                console.error('The file does not exist');
+              } else {
+                // Some other error
+                console.error(err.message);
+              }
+            } else {
+              // The file was deleted successfully
+              console.log('The file was deleted');
+            }
+          });
+    });
+    };
+    deleteNote.images.forEach( p => {
+        fs.unlink(p, (err) => {
+            if (err) {
+              // An error occurred while deleting the file
+              if (err.code === 'ENOENT') {
+                // The file does not exist
+                console.error('The file does not exist');
+              } else {
+                // Some other error
+                console.error(err.message);
+              }
+            } else {
+              // The file was deleted successfully
+              console.log('The file was deleted');
+            }
+          });
+    });
+    
 
     if (!deleteNote?.user?.equals(foundUser._id)) {
         console.log('NOT FOUND')

@@ -7,3 +7,5 @@
 6.vertifed role front //deem unnecessary (have at back)
 7.front api //
 8.voice managing sys. *no why in hell i want this
+
+btw it's req.user not .username

@@ -4,13 +4,21 @@ const NoteController = require('../../controller/Hnote');
 const verifyRoles = require('../../middleware/verifyRoles');
 const multer = require('multer');
 const path = require('path');
+const {pathChecker , nameChecker} =  require('./pathFindder');
+const { v4: uuidv4 } = require('uuid');
+
+
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'pubilc/image'); // specify the folder where the files should be saved
+    destination: async function (req, file, cb) {
+        await pathChecker(req , file);
+        
+        cb(null, `pubilc/image/${req.user}`); // specify the folder where the files should be saved
     },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname);
+    filename: async function (req, file, cb) {
+        const ext = path.extname(file.originalname);  // Get the file extension
+        const uniqueName = `${uuidv4()}${ext}`;  // Create a unique name using UUID and original extension
+        cb(null, uniqueName);  // Save the file with the new name
     }
 });
 
