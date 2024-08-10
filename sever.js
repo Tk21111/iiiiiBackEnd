@@ -47,6 +47,7 @@ app.use('/logout', require('./routes/logOut'));
 app.use(verifyJWT);
 app.use('/note', require('./routes/api/noteApi'));
 app.use('/location', require('./routes/api/locaApi'));
+app.use('/user', require('./routes/api/userApi'));
 
 
 app.all('*', (req, res) => {

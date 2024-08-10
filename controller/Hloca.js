@@ -57,7 +57,8 @@ const HgetallLoca = async (req, res) => {
     // You could also do this with a for...of loop
     const notesWithUser = await Promise.all(loca.map(async (loca) => {
         const note = await Note.findById(loca.food).lean().exec()
-        return { ...loca, text: note?.text}
+        const user = await User.findById(loca.user).lean().exec()
+        return { ...loca, text: note?.text , aka : user.aka , imageUser : user.image}
     }))
     console.log(notesWithUser)
     res.json(notesWithUser)    
