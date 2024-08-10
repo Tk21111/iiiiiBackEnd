@@ -54,6 +54,12 @@ const Hcreate = async (req, res) => {
         const notes = req.body.notes || []; //somehow this thing have obj null prototpe in it but still work i wander why
         
         if (Array.isArray(notes)) {
+            for (let f ;f < notes.length; f++){
+                const du = await Note.findOne({ text: notes[i].text }).lean().exec();
+                if (duplicate) {
+                    return res.status(409).json({ noteId: duplicate._id });
+                }
+            }
             for (let i = 0; i < notes.length; i++) {
 
                 const note = notes[i];
@@ -62,10 +68,6 @@ const Hcreate = async (req, res) => {
                     return res.status(401).json({ message: 'User not found' });
                 }
 
-                const duplicate = await Note.findOne({ text: note.text }).lean().exec();
-                if (duplicate) {
-                    return res.status(409).json({ noteId: duplicate._id });
-                }
 
                 //file path is in req.files
                 const filePaths = req.files ? req.files.filter(file => file.fieldname.startsWith(`notes[${i}][files]`)).map(file => file.path) : [];
