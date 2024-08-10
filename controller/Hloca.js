@@ -23,13 +23,18 @@ const HcreateLoca = async (req, res) => {
         if (!foundUser) {
             console.log("User not found");
             return res.status(401).json({ message: 'User not found' });
-        }
-
+        };
+        let role;
+        for(let i of foundUser.roles){
+            if (i === 'org'){
+                role = true;
+            }
+        };
         // Save image paths to the database
         const imagePaths = images.map(file => file.path);
         console.log(imagePaths)
 
-        const loca = await Loca.create({ food, town, user: foundUser._id, subdistrict, county, more, images: imagePaths });
+        const loca = await Loca.create({ food, town, user: foundUser._id, subdistrict, county, more, images: imagePaths , organisation: role });
         return res.status(201).json({ message: 'Created', loca });
     } catch (error) {
         console.error("Error creating loca:", error);
@@ -51,10 +56,10 @@ const HgetallLoca = async (req, res) => {
     // See Promise.all with map() here: https://youtu.be/4lqJBBEpjRE 
     // You could also do this with a for...of loop
     const notesWithUser = await Promise.all(loca.map(async (loca) => {
-        const noteText = await Note.findById(loca.food).lean().exec()
-        return { ...loca, text: noteText?.text }
+        const note = await Note.findById(loca.food).lean().exec()
+        return { ...loca, text: note?.text}
     }))
-
+    console.log(notesWithUser)
     res.json(notesWithUser)    
 };
 

@@ -28,7 +28,10 @@ const locaSchema = new mongoose.Schema({
     },
     images: { 
         type: [String] 
-    } 
+    },
+    organisation : {
+        type: Boolean
+    }
 
 })
 
