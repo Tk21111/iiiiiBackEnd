@@ -31,7 +31,10 @@ const locaSchema = new mongoose.Schema({
     },
     organisation : {
         type: Boolean
-    }
+    },
+    getP : {
+        type : String
+    },
 
 })
 

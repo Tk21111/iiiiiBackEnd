@@ -58,7 +58,7 @@ const HgetallLoca = async (req, res) => {
     const notesWithUser = await Promise.all(loca.map(async (loca) => {
         const note = await Note.findById(loca.food).lean().exec()
         const user = await User.findById(loca.user).lean().exec()
-        return { ...loca, text: note?.text , aka : user.aka , imageUser : user.image}
+        return { ...loca, text: note?.text , count: note?.count,  aka : user?.aka , imageUser : user?.image}
     }))
     console.log(notesWithUser)
     res.json(notesWithUser)    
@@ -71,17 +71,30 @@ const HgetallUserLoca = async (req, res) => {
     if (!name) return res.status(400).json({ message: 'Missing required fields' });
 
     try {
-        const userId = await User.findOne({ username: name }).select('-__v').exec();
-        const result  = await Loca.find({user : userId});
+        const user = await User.findOne({ username: name }).select('-__v').exec();
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
-        res.json(result)
+        let result = await Loca.find({ user: user._id }).lean().exec();
+
+        result = await Promise.all(result.map(async (loca) => {
+            const note = await Note.findById(loca.food).lean().exec();
+            return {
+                ...loca,
+                text: note?.text,
+                count: note?.count,
+                owner: user.username
+            };
+        }));
+
+        console.log(result);
+
+        res.json(result);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-
-
 };
+
 //@patch
 
 
@@ -148,8 +161,22 @@ const HdeleteLoca = async (req , res) => {
     const result = await deleteLoca.deleteOne()
     res.json({message : id + 'note deleted'})
 
-}
-
-module.exports = { HcreateLoca , HgetallLoca , HdeleteLoca , HgetallUserLoca , HupdateLoca
-
 };
+
+const Hdonate = async (req , res) => {
+    const reqUser = req.user
+
+    let loca = await Loca.findById({_id : req.body.id}).exec();
+    if(!loca){
+        res.sendStatus(404);
+    }
+    loca.getP =  reqUser;
+    loca.save();
+
+    res.status(200).json({"message": "good"});
+};
+
+
+
+
+module.exports = { HcreateLoca , HgetallLoca , HdeleteLoca , HgetallUserLoca , HupdateLoca , Hdonate};

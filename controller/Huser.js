@@ -27,8 +27,11 @@ const updateProfile = async (req,res) => {
 };
 
 const getUser = async (req,res) => {
-    const user = await User.findOne({username : req.user}).exec();
-    if(!user){
+
+    const user = await User.findById(req.body.userId)
+    .select('-password -roles')
+    .exec();
+      if(!user){
         res.sendStatus(404);
     }
     res.json(user);

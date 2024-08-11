@@ -28,6 +28,6 @@ router.route('/update')
     .patch(upload.array('images'), UserController.updateProfile);
 
 router.route('/get')
-    .get(UserController.getUser);
+    .patch(UserController.getUser);
 
 module.exports = router;

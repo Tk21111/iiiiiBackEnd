@@ -30,6 +30,8 @@ router.route('/all')
     .get( LocaController.HgetallLoca);
 router.route('/create')
     .post(upload.array('images') , LocaController.HcreateLoca);
+router.route('/donate')
+    .post( LocaController.Hdonate);
 router.route('/update')
     .patch(LocaController.HupdateLoca);
 router.route('/delete')
