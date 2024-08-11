@@ -7,6 +7,7 @@ const Hauth = async(req, res) => {
     if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required ' });
     const found = await User.findOne({ username: user }).exec();
     if (!found) return res.sendStatus(401); //unauthorized
+
     const match = await bcrypt.compare(pwd, found.password);
     if (match) {
         const roles = found.roles
@@ -39,7 +40,7 @@ const Hauth = async(req, res) => {
         });
                 
 
-        res.status(200).json({ accessToken });
+        res.status(200).json({ accessToken , image : (found?.image || null ) , aka : (found?.aka) || null});
     } else {
         console.log('!match')
         res.sendStatus(401);

@@ -25,4 +25,12 @@ const updateProfile = async (req,res) => {
     }
     
 };
-module.exports = {updateProfile}
+
+const getUser = async (req,res) => {
+    const user = await User.findOne({username : req.user}).exec();
+    if(!user){
+        res.sendStatus(404);
+    }
+    res.json(user);
+}
+module.exports = {updateProfile ,getUser}

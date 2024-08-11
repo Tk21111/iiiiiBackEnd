@@ -27,6 +27,7 @@ const upload = multer({ storage: storage });
 router.route('/update')
     .patch(upload.array('images'), UserController.updateProfile);
 
-
+router.route('/get')
+    .get(UserController.getUser);
 
 module.exports = router;

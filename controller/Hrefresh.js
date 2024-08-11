@@ -13,22 +13,25 @@ const Hrefresh = (req, res) => {
         async (err, decoded) => {
             if (err) return res.status(403).json({ message: 'Forbidden' })
 
-            const foundUser = await User.findOne({ username: decoded.username }).exec()
+            const found = await User.findOne({ username: decoded.username }).exec()
 
-            if (!foundUser) return res.status(401).json({ message: 'Unauthorizead' })
+            if (!found) return res.status(401).json({ message: 'Unauthorizead' })
+
+            //get aka and image to set in redux
+            const userInfo = {image : (found?.image || '') , aka : (found?.aka) || ''};
 
             const accessToken = jwt.sign(
                 {
                     "userinfo": {
-                        "username": foundUser.username,
-                        "roles": foundUser.roles
+                        "username": found.username,
+                        "roles": found.roles
                     }
                 },
                 process.env.ACCESS_TOKEN,
                 { expiresIn: '15m' }
             )
 
-            res.json({ accessToken })
+            res.status(200).json({ accessToken , image : (found?.image || null ) , aka : (found?.aka) || null});
         }
     )
 }
