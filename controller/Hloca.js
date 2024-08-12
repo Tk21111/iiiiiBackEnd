@@ -45,7 +45,7 @@ const HcreateLoca = async (req, res) => {
 
 //@get 
 const HgetallLoca = async (req, res) => {
-    const loca = await Loca.find().select('-__v').lean()
+    const loca = await Loca.find().select('-__v -getP').lean()
 
     // If no notes 
     if (!loca?.length) {
@@ -167,13 +167,17 @@ const Hdonate = async (req , res) => {
     const reqUser = req.user
 
     let loca = await Loca.findById({_id : req.body.id}).exec();
+    let user = await User.findOne({username: reqUser}).exec();
     if(!loca){
         res.sendStatus(404);
-    }
-    loca.getP =  reqUser;
-    loca.save();
+    } else {
+        loca.getP =  reqUser;
+        loca.getPId = user._id
+        loca.save();
 
-    res.status(200).json({"message": "good"});
+        res.status(200).json({"message": "good"});
+    }
+    
 };
 
 

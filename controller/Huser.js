@@ -1,6 +1,8 @@
 const User = require('../model/User');
 
 const updateProfile = async (req,res) => {
+
+    console.log(req.body)
     //image files
     try{
         let paths = req.files;
@@ -33,7 +35,9 @@ const getUser = async (req,res) => {
     .exec();
       if(!user){
         res.sendStatus(404);
+    }else{
+        res.json(user);
     }
-    res.json(user);
+    
 }
 module.exports = {updateProfile ,getUser}

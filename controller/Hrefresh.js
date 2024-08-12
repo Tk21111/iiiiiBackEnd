@@ -18,7 +18,7 @@ const Hrefresh = (req, res) => {
             if (!found) return res.status(401).json({ message: 'Unauthorizead' })
 
             //get aka and image to set in redux
-            const userInfo = {image : (found?.image || '') , aka : (found?.aka) || ''};
+            
 
             const accessToken = jwt.sign(
                 {
