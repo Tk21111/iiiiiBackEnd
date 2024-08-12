@@ -30,14 +30,27 @@ const updateProfile = async (req,res) => {
 
 const getUser = async (req,res) => {
 
-    const user = await User.findById(req.body.userId)
-    .select('-password -roles')
-    .exec();
-      if(!user){
-        res.sendStatus(404);
-    }else{
-        res.json(user);
+  
+
+    try {
+        if(req?.body?.userId === "undefined"){
+            res.status(400).json({"message" : "bad requset"})
+        } else{
+            const user = await User.findById(req.body.userId)
+        .select('-password -roles')
+        .exec();
+          if(!user){
+            res.sendStatus(404);
+        }else{
+            res.json(user);
+        }
+        
+        }
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({"message" : err})
     }
+    
     
 }
 module.exports = {updateProfile ,getUser}

@@ -60,7 +60,6 @@ const HgetallLoca = async (req, res) => {
         const user = await User.findById(loca.user).lean().exec()
         return { ...loca, text: note?.text , count: note?.count,  aka : user?.aka , imageUser : user?.image}
     }))
-    console.log(notesWithUser)
     res.json(notesWithUser)    
 };
 
@@ -85,9 +84,6 @@ const HgetallUserLoca = async (req, res) => {
                 owner: user.username
             };
         }));
-
-        console.log(result);
-
         res.json(result);
     } catch (error) {
         console.error(error);
@@ -125,7 +121,6 @@ const HdeleteLoca = async (req , res) => {
     const {id} = req.body;
     const name = req.user;
     if (!id) {
-        console.log(400)
         return res.status(401).json({message : 'bad request'});
     }
     const deleteLoca = await Loca.findById(id).exec();
