@@ -58,7 +58,7 @@ const HgetallLoca = async (req, res) => {
     const notesWithUser = await Promise.all(loca.map(async (loca) => {
         const note = await Note.findById(loca.food).lean().exec()
         const user = await User.findById(loca.user).lean().exec()
-        return { ...loca, text: note?.text , count: note?.count,  aka : user?.aka , imageUser : user?.image}
+        return { ...loca, text: note?.text , count: note?.count,  aka : user?.aka , imageUser : user?.image , exp : note?.timeOut , tag : note?.tag}
     }))
     res.json(notesWithUser)    
 };
@@ -81,7 +81,10 @@ const HgetallUserLoca = async (req, res) => {
                 ...loca,
                 text: note?.text,
                 count: note?.count,
-                owner: user.username
+                owner: user?.username,
+                tag: note?.tag,
+                count: note?.count,
+                exp : note?.timeOut,
             };
         }));
         res.json(result);
