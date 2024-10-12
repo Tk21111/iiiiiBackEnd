@@ -38,6 +38,9 @@ const locaSchema = new mongoose.Schema({
     getPId: {
         type : String,
     },
+    num : {
+        type : Number,
+    },
 
 })
 

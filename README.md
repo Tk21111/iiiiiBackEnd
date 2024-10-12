@@ -6,6 +6,6 @@
 5.image process *why that //check work well??
 6.vertifed role front //deem unnecessary (have at back)
 7.front api //
-8.voice managing sys. *no why in hell i want this //checked it a fuking pain
+8.voice managing sys. *no why in hell i want this //checked it a ****** pain
 
 btw it's req.user not .username

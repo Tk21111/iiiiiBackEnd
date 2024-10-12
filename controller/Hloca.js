@@ -3,22 +3,31 @@ const User = require('../model/User');
 const Loca = require('../model/Loca');
 
 const fs = require('fs');
+const { count } = require('console');
 //@ username, food , town , subdistrict , county , more
 //@post
 const HcreateLoca = async (req, res) => {
     const name = req.user;
-    const { food, town, subdistrict, county, more } = req.body;
+    const { food, town, subdistrict, county, more ,num } = req.body;
 
     
     //multer 
     const images = req.files;
 
-    if (!name || !food || !town || !subdistrict || !county) {
+    if (!name || !food || !town || !subdistrict || !county || !num) {
         console.log("Missing required fields");
         return res.status(400).json({ message: 'Missing required fields' });
     }
 
     try {
+        //update note for count of food left
+        const note = await Note.findById(food);
+        const left = note.count - num 
+        console.log(note)
+        if (left >=0){
+            note.count = left
+            note.save();
+        };
         const foundUser = await User.findOne({ username: name }).lean().exec();
         if (!foundUser) {
             console.log("User not found");
@@ -34,7 +43,7 @@ const HcreateLoca = async (req, res) => {
         const imagePaths = images.map(file => file.path);
         console.log(imagePaths)
 
-        const loca = await Loca.create({ food, town, user: foundUser._id, subdistrict, county, more, images: imagePaths , organisation: role });
+        const loca = await Loca.create({ food, town, user: foundUser._id, subdistrict, county, more, images: imagePaths , organisation: role , num });
         return res.status(201).json({ message: 'Created', loca });
     } catch (error) {
         console.error("Error creating loca:", error);
@@ -58,7 +67,7 @@ const HgetallLoca = async (req, res) => {
     const notesWithUser = await Promise.all(loca.map(async (loca) => {
         const note = await Note.findById(loca.food).lean().exec()
         const user = await User.findById(loca.user).lean().exec()
-        return { ...loca, text: note?.text , count: note?.count,  aka : user?.aka , imageUser : user?.image , exp : note?.timeOut , tag : note?.tag}
+        return { ...loca, text: note?.text ,  aka : user?.aka , imageUser : user?.image , exp : note?.timeOut , tag : note?.tag}
     }))
     res.json(notesWithUser)    
 };
@@ -80,10 +89,8 @@ const HgetallUserLoca = async (req, res) => {
             return {
                 ...loca,
                 text: note?.text,
-                count: note?.count,
                 owner: user?.username,
                 tag: note?.tag,
-                count: note?.count,
                 exp : note?.timeOut,
             };
         }));
