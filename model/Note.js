@@ -27,6 +27,10 @@ const noteSchema = new mongoose.Schema({
         type : Boolean,
         default : false
     },
+    donate : {
+        type : Boolean,
+        default : false
+    },
     images : {
         type : [String]
     }

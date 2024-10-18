@@ -30,4 +30,7 @@ router.route('/update')
 router.route('/get')
     .patch(UserController.getUser);
 
+router.route('/get/org')
+    .get(UserController.getOrg);
+
 module.exports = router;

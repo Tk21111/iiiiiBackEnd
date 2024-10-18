@@ -30,8 +30,6 @@ const updateProfile = async (req,res) => {
 
 const getUser = async (req,res) => {
 
-  
-
     try {
         if(req?.body?.userId === "undefined"){
             res.status(400).json({"message" : "bad requset"})
@@ -49,8 +47,20 @@ const getUser = async (req,res) => {
     } catch (err) {
         console.log(err)
         res.status(500).json({"message" : err})
-    }
-    
-    
+    }   
 }
-module.exports = {updateProfile ,getUser}
+
+const getOrg = async (req , res) => {
+
+    try {
+        let user = await User.find()
+        const userOrg = user.filter(obj => obj.roles.includes("org"))
+        res.json(userOrg)
+
+    } catch (err) {
+    
+        res.status(500).json({"message" : err + "getOrg"})
+    }
+};
+
+module.exports = {updateProfile ,getUser , getOrg}
