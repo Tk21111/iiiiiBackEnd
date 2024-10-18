@@ -67,7 +67,7 @@ const HgetallLoca = async (req, res) => {
     const notesWithUser = await Promise.all(loca.map(async (loca) => {
         const note = await Note.findById(loca.food).lean().exec()
         const user = await User.findById(loca.user).lean().exec()
-        return { ...loca, text: note?.text ,  aka : user?.aka , imageUser : user?.image , exp : note?.timeOut , tag : note?.tag}
+        return { ...loca, text: note?.text , user : user?.username,  aka : user?.aka , imageUser : user?.image , exp : note?.timeOut , tag : note?.tag}
     }))
     res.json(notesWithUser)    
 };
@@ -124,18 +124,17 @@ const HupdateLoca = async (req , res ) => {
 
 }
 
-//@ loca_id
+//@ loca_id , username of loca
 //@delete
-
 const HdeleteLoca = async (req , res) => {
-    const {id} = req.body;
-    const name = req.user;
+
+    const {id , user} = req.body;
     if (!id) {
         return res.status(401).json({message : 'bad request'});
     }
     const deleteLoca = await Loca.findById(id).exec();
 
-    const foundUser = await User.findOne({username : name }).lean().exec();
+    const foundUser = await User.findOne({username : user }).exec();
     if (!deleteLoca.user.equals(foundUser._id)) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
