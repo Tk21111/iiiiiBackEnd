@@ -54,8 +54,9 @@ const HcreateLoca = async (req, res) => {
 
 //@get 
 const HgetallLoca = async (req, res) => {
-    const loca = await Loca.find().select('-__v -getP').lean()
+    let loca = await Loca.find().select('-__v -getP').lean()
 
+    loca = loca.filter(obj => (!obj.getP && !obj.getPId))
     // If no notes 
     if (!loca?.length) {
         return res.status(400).json({ message: 'No notes found' })
@@ -67,7 +68,14 @@ const HgetallLoca = async (req, res) => {
     const notesWithUser = await Promise.all(loca.map(async (loca) => {
         const note = await Note.findById(loca.food).lean().exec()
         const user = await User.findById(loca.user).lean().exec()
-        return { ...loca, text: note?.text , user : user?.username,  aka : user?.aka , imageUser : user?.image , exp : note?.timeOut , tag : note?.tag}
+        return { 
+            ...loca, 
+            text: note?.text ,
+            userName : user?.username,
+            aka : user?.aka ,
+            imageUser : user?.image ,
+            exp : note?.timeOut ,
+            tag : note?.tag}
     }))
     res.json(notesWithUser)    
 };
@@ -89,7 +97,7 @@ const HgetallUserLoca = async (req, res) => {
             return {
                 ...loca,
                 text: note?.text,
-                owner: user?.username,
+                userName : user?.username,
                 tag: note?.tag,
                 exp : note?.timeOut,
             };
@@ -108,7 +116,7 @@ const HupdateLoca = async (req , res ) => {
     const name = req.user;
     const { id, food, town, subdistrict, county, more } = req.body;
 
-    if (!id || !name || !food || !town || !subdistrict || !county) {
+    if (!id) {
         console.log("Missing required fields");
         return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -169,6 +177,8 @@ const HdeleteLoca = async (req , res) => {
 
 const Hdonate = async (req , res) => {
     const reqUser = req.user
+
+    console.log(reqUser)
 
     let loca = await Loca.findById({_id : req.body.id}).exec();
     let user = await User.findOne({username: reqUser}).exec();
