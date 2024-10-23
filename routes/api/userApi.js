@@ -33,4 +33,10 @@ router.route('/get')
 router.route('/get/org')
     .get(UserController.getOrg);
 
+router.route('/noti')
+    .patch(UserController.setNoti);
+    
+router.route('/noti')
+    .get(UserController.getNoti);
+
 module.exports = router;

@@ -22,6 +22,9 @@ const userSchema = new mongoose.Schema({
     aka: {
         type: String,
     },
+    noti: {
+        type : [Object],
+    },
 })
 
 module.exports = mongoose.model('User' , userSchema)
