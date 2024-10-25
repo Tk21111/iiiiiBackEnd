@@ -30,6 +30,7 @@ const updateProfile = async (req,res) => {
 
 const getUser = async (req,res) => {
 
+
     try {
         if(req?.body?.userId === "undefined"){
             res.status(400).json({"message" : "bad requset"})
