@@ -8,13 +8,13 @@ const { count } = require('console');
 //@post
 const HcreateLoca = async (req, res) => {
     const name = req.user;
-    const { food, town, subdistrict, county, more ,num } = req.body;
+    const { food, district, subdistrict, country, more ,num , province , longitude , latitude} = req.body;
 
     
     //multer 
     const images = req.files;
 
-    if (!name || !food || !town || !subdistrict || !county || !num) {
+    if (!name || !food || !district || !subdistrict || !country || !num || !province ||!latitude || !longitude) {
         console.log("Missing required fields");
         return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -40,10 +40,21 @@ const HcreateLoca = async (req, res) => {
             }
         };
         // Save image paths to the database
-        const imagePaths = images.map(file => file.path);
-        console.log(imagePaths)
+        const imagePaths = images?.map(file => file.path);
 
-        const loca = await Loca.create({ food, town, user: foundUser._id, subdistrict, county, more, images: imagePaths , organisation: role , num });
+        const loca = await Loca.create({ 
+            food, 
+            user: foundUser._id, 
+            subdistrict, 
+            country,
+            district,
+            province,
+            more,
+            latitude,
+            longitude,
+            images: imagePaths , 
+            organisation: role , 
+            num });
         return res.status(201).json({ message: 'Created', loca });
     } catch (error) {
         console.error("Error creating loca:", error);

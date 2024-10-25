@@ -11,7 +11,7 @@ const locaSchema = new mongoose.Schema({
         require : true,
         ref : 'Note'
     },
-    town : {
+    district : {
         type : String,
         required : true
     },
@@ -19,7 +19,11 @@ const locaSchema = new mongoose.Schema({
         type : String,
         required : true
     },
-    county : {
+    province : {
+        type : String,
+        required : true
+    },
+    country : {
         type : String,
         required : true
     },
@@ -40,6 +44,12 @@ const locaSchema = new mongoose.Schema({
     },
     num : {
         type : Number,
+    },
+    latitude : {
+        type : String
+    },
+    longitude : {
+        type : String
     },
 
 })
