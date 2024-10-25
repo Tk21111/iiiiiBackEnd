@@ -147,13 +147,14 @@ const HupdateLoca = async (req , res ) => {
 //@delete
 const HdeleteLoca = async (req , res) => {
 
-    const {id , user} = req.body;
+    const {id} = req.body;
+  
     if (!id) {
         return res.status(401).json({message : 'bad request'});
     }
     const deleteLoca = await Loca.findById(id).exec();
 
-    const foundUser = await User.findOne({username : user }).exec();
+    const foundUser = await User.findOne({username : req.user }).exec();
     if (!deleteLoca.user.equals(foundUser._id)) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
