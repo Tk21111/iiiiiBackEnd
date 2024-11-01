@@ -48,6 +48,7 @@ app.use(verifyJWT);
 app.use('/note', require('./routes/api/noteApi'));
 app.use('/location', require('./routes/api/locaApi'));
 app.use('/user', require('./routes/api/userApi'));
+app.use('/how', require('./routes/api/howApi'));
 
 
 app.all('*', (req, res) => {
