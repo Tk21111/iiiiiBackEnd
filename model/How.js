@@ -6,17 +6,9 @@ const howSchema = new mongoose.Schema({
         required : true,
         ref : 'User'
     },
-    food : {
-        type : mongoose.Schema.Types.ObjectId,
-        require : true,
-        ref : 'Note'
-    },
     public : Boolean ,
-    vote : {
-        type : [Number]
-    },
-    comment : [String],
-    howTo : String,
+    tag : [String],
+    des : String,
     imagePath : [String],
 
 })

@@ -1,17 +1,23 @@
 const How = require('../model/How');
+const User = require('../model/User');
 
 const Hsethow = async (req,res) => {
 
-    const {food , public, imagePath} = req.body;
-
+    const {tag , public, imagePath ,des , food}  = req.body;
+   
     if(!req.user) return res.sendStatus(401);
-    if(!food || !public) return res.sendStatus(400);
+    if(!tag || !public || !des || !food) return res.sendStatus(400);
 
     
-    try { await How.create({
-        user : req.user,
+    try { 
+        const userId = await User.findOne({username : req.user}).exec()
+
+        await How.create({
+        user : userId._id,
         food : food,
+        tag : tag,
         public: public,
+        des : des ,
         imagePath : imagePath || null
     });
     } catch (err) {
@@ -19,7 +25,7 @@ const Hsethow = async (req,res) => {
         return res.json(err)
     }
 
-    return res.sendStatus(200)
+    return res.json({"m" : "ok"})
 
 };
 
@@ -36,24 +42,25 @@ const Hgethow = async (req,res) => {
 
 const Hupdatehow = async (req,res) => {
 
-    const {food , vote , comment , id , howTo} = req.body
+    const {tag , id , des , food} = req.body
 
     if(!req?.user) return res.sendStatus(401)
 
    try { const HowTo = await How.findById(id)
     if(!HowTo) return res.sendStatus(404);
 
-    if(vote !== undefined){
-        HowTo.vote = vote
+   
+    if(des !== undefined){
+        HowTo.des = des
     }
-    if(comment !== undefined){
-        HowTo.comment = comment
+    if(food !== undefined){
+        HowTo.food = des
     }
-    if(howTo !== undefined){
-        HowTo.howTo = howTo
+    if(tag !== undefined){
+        HowTo.tag = des
     }
 
-    HowTo.save()
+    await HowTo.save()
 
     return res.sendStatus(200);
     } catch (err) {
