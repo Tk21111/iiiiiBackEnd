@@ -6,9 +6,11 @@ const howSchema = new mongoose.Schema({
         required : true,
         ref : 'User'
     },
+    food : String,
     public : Boolean ,
     tag : [String],
     des : String,
+    ingredent : [Object],
     imagePath : [String],
 
 })

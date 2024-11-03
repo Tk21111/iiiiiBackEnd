@@ -3,10 +3,12 @@ const User = require('../model/User');
 
 const Hsethow = async (req,res) => {
 
-    const {tag , public, imagePath ,des , food}  = req.body;
+    const {tag , public, imagePath ,des , food , ingredent}  = req.body;
+
+
    
     if(!req.user) return res.sendStatus(401);
-    if(!tag || !public || !des || !food) return res.sendStatus(400);
+    //if(!tag || !des || !food) return res.sendStatus(400);
 
     
     try { 
@@ -16,16 +18,18 @@ const Hsethow = async (req,res) => {
         user : userId._id,
         food : food,
         tag : tag,
+        ingredent : ingredent,
         public: public,
         des : des ,
         imagePath : imagePath || null
     });
+    return res.json({"m" : "ok"})
     } catch (err) {
         console.error(err + " : setHow");
         return res.json(err)
     }
 
-    return res.json({"m" : "ok"})
+    
 
 };
 
