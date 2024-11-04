@@ -11,11 +11,13 @@ const { v4: uuidv4 } = require('uuid');
 
 const storage = multer.diskStorage({
     destination: async function (req, file, cb) {
+ 
         await pathChecker(req , file);
         
         cb(null, `pubilc/image/${req.user}`); // specify the folder where the files should be saved
     },
     filename: async function (req, file, cb) {
+
         const ext = path.extname(file.originalname);  // Get the file extension
         const uniqueName = `${uuidv4()}${ext}`;  // Create a unique name using UUID and original extension
         cb(null, uniqueName);  // Save the file with the new name

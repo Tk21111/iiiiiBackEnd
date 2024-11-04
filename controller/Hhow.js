@@ -1,9 +1,58 @@
 const How = require('../model/How');
 const User = require('../model/User');
 
+/*
+const Hsethow = async (req, res) => {
+    console.log("Request received:", req.method, req.url);
+    const images = req.files;
+    const imagePaths = images?.map(file => file.path); // Extract paths of uploaded images
+
+    // Extract data from the request body
+    const { tag, public, des, food, ingredent } = req.body;
+
+    // Check if user is authenticated
+    if (!req.user) return res.sendStatus(401);
+
+    // Optional: Uncomment if tag, des, or food are required fields
+    // if (!tag || !des || !food) return res.sendStatus(400);
+
+    try { 
+        // Find the user ID based on the username in req.user
+        const user = await User.findOne({ username: req.user }).exec();
+        if (!user) {
+            console.error("User not found");
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Create a new How document with the extracted data
+        const newHow = await How.create({
+            user: user._id,
+            food: food,
+            tag: tag,
+            ingredent: ingredent,
+            public: public,
+            des: des,
+            imagePath: imagePaths || null
+        });
+
+        // Send success response
+        return res.json({ message: "Data saved successfully", newHow });
+    } catch (err) {
+        // Log the error and send a server error response
+        console.error("Error in Hsethow:", err);
+        return res.status(500).json({ error: "Internal Server Error", details: err.message });
+    }
+};
+*/
 const Hsethow = async (req,res) => {
 
-    const {tag , public, imagePath ,des , food , ingredent}  = req.body;
+    const file = req.files
+
+    const path = file.map(val => val?.path)
+
+    console.log(path)
+
+    const {tag , public ,des , food , ingredent}  = req.body;
 
 
    
@@ -21,7 +70,7 @@ const Hsethow = async (req,res) => {
         ingredent : ingredent,
         public: public,
         des : des ,
-        imagePath : imagePath || null
+        images : path || null
     });
     return res.json({"m" : "ok"})
     } catch (err) {
@@ -32,6 +81,9 @@ const Hsethow = async (req,res) => {
     
 
 };
+
+
+
 
 const Hgethow = async (req,res) => {
 
