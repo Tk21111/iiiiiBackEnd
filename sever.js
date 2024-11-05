@@ -49,6 +49,7 @@ app.use('/note', require('./routes/api/noteApi'));
 app.use('/location', require('./routes/api/locaApi'));
 app.use('/user', require('./routes/api/userApi'));
 app.use('/how', require('./routes/api/howApi'));
+app.use("/post", require('./routes/api/postApi'));
 
 
 app.all('*', (req, res) => {
