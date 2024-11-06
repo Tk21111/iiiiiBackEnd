@@ -49,8 +49,9 @@ const likePost = async (req, res) => {
 // Comment on a Post
 const commentOnPost = async (req, res) => {
 
-    const eId = uuid()
+   
     const { id , content } = req.body;
+    const user = req.user
     
     if(!id || !content) return res.sendStatus(400);
 
@@ -58,11 +59,13 @@ const commentOnPost = async (req, res) => {
         const post = await Post.findById(id)
         if(!post) return res.sendStatus(404);
 
-        const postReply = post.reply
+        await Post.create({
+            user : user,
+            content : content,
+            reply : id
+        });
 
-        post.reply = [...postReply , eId ]
-
-        createPost(req ,res)
+        return res.sendStatus(200);
 
     } catch (err) {
         console.log(err + " ; commentOnpost")
@@ -73,20 +76,11 @@ const commentOnPost = async (req, res) => {
 const getComment = async (req, res) => {
     const {id} = req.body;
 
-    try {const post = await Post.findById(id);
-    if(!post || !post.reply) return res.sendStatus(404);
+    try {
+        const post = await Post.findAll({reply : id}).exec();
+        if(!post || !post.reply) return res.sendStatus(404);
 
-    const replyAll = []
-
-    post.reply.forEach(async (val) =>   {
-        const reply = await Post.findOne(val).exec()
-        if(!reply) return res.sendStatus(404);
-
-        replyAll.push(reply);
-
-    });
-
-    return res.json(replyAll)
+        return res.json(post);
     } catch (err) {
         console.log(err + " ; getComment")
         return res.status(500).json(err)
