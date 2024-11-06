@@ -12,7 +12,6 @@ const postSchema = new mongoose.Schema({
     },
     reply : {
         type : mongoose.Schema.Types.ObjectId,
-        required : true,
         ref : 'Post'
     },
     like : Number,
