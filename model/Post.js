@@ -14,14 +14,10 @@ const postSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         required : true,
         ref : 'Post'
-    },,
+    },
     like : Number,
     images : [String],
-    //if eId === reply
-    eId : {
-        type : String,
-        require : true,
-    },
+  
 
 
 
