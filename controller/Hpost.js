@@ -49,7 +49,8 @@ const likePost = async (req, res) => {
 // Comment on a Post
 const commentOnPost = async (req, res) => {
 
-   
+    const files = req.files
+    const images = files.map(val => val?.path)
     const { id , content } = req.body;
     const user = req.user
     
@@ -62,7 +63,8 @@ const commentOnPost = async (req, res) => {
         await Post.create({
             user : user,
             content : content,
-            reply : id
+            reply : id,
+            images : images,
         });
 
         return res.sendStatus(200);
