@@ -1,5 +1,6 @@
 // controllers/postController.js
 const Post = require('../model/Post')
+const User = require('../model/User')
 const { v4: uuid } = require('uuid');
 
 
@@ -7,20 +8,29 @@ const { v4: uuid } = require('uuid');
 const createPost = async (req, res) => {
 
     const file = req.files
-    const path = file.map(val => val?.path)
-
+    const path = file?.map(val => val?.path)
     const user = req.user
-    const { content} = req.body;
 
-    if(!content ) return res.sendStatus(400);
-    await Post.create(
-        {
-            user : user,
-            content : content,
-            path : path,
-        }
-    )
-  return res.sendStatus(200)
+    let {content} = req.body;
+    
+    try {
+        if(!content ) return res.sendStatus(400);
+        const userId = await User.findOne({username : user}).exec();
+        if(!userId) return res.sendStatus(401)
+        await Post.create(
+                {
+                    user : userId,
+                    content : content,
+                    path : path || [],
+                }
+        )
+        console.log('done')
+        return res.status(200).json({"msg" : "ok"})
+    } catch (err) {
+        console.log( err + " ; createPost")
+        return res.json(err)
+    }
+    
 }
 // Get All Posts
 const getAllPosts = async (req, res) => {
@@ -57,6 +67,8 @@ const commentOnPost = async (req, res) => {
     if(!id || !content) return res.sendStatus(400);
 
     try {
+        const userId = await User.findOne({username : user}).exec();
+        if(!userId) return res.sendStatus(401)
         const post = await Post.findById(id)
         if(!post) return res.sendStatus(404);
 

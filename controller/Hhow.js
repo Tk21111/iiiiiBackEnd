@@ -51,6 +51,7 @@ const Hsethow = async (req,res) => {
     const path = file.map(val => val?.path)
 
     console.log(path)
+    console.log(req.body)
 
     const {tag , public ,des , food , ingredent}  = req.body;
 
