@@ -39,15 +39,24 @@ const getAllPosts = async (req, res) => {
 };
 
 // Like a Post
+//id = {postid : bool}
 const likePost = async (req, res) => {
-    const {id , like} = req.body;
+    const {id} = req.body;
 
     try {
-        const post = await Post.findById(id)
-        if(!post) return res.sendStatus(404)
 
-        post.like = post.like + like;
-        post.save();
+        if(!id ) return res.sendStatus(400);
+        
+        const user = awiat user.findOne({username : req.user}).exec();
+
+        if(!user) return res.sendStatus(401);
+        
+        const post = await Post.find();
+
+        const postUpdate = post.map(val => { key.Object(id).includes(val?._id) ? id[val?._id] ? val.like = [...val.like , user?._id] : val.unlike = [...val.unlike , user?._id ]
+        : val}
+
+        await post.save();
         res.sendStatus(200)
     } catch (err) {
         console.log(err + " ; likePost")
