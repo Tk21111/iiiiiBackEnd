@@ -11,9 +11,12 @@ const createPost = async (req, res) => {
     const path = file?.map(val => val?.path)
     const user = req.user
 
+    
+
     let {content} = req.body;
     
     try {
+        const images =  file.map(val => val.path)
         if(!content ) return res.sendStatus(400);
         const userId = await User.findOne({username : user}).exec();
         if(!userId) return res.sendStatus(401)
@@ -21,10 +24,9 @@ const createPost = async (req, res) => {
                 {
                     user : userId,
                     content : content,
-                    path : path || [],
+                    images : images || [],
                 }
         )
-        console.log('done')
         return res.status(200).json({"msg" : "ok"})
     } catch (err) {
         console.log( err + " ; createPost")
@@ -34,7 +36,11 @@ const createPost = async (req, res) => {
 }
 // Get All Posts
 const getAllPosts = async (req, res) => {
-  const data = await Post.find()
+    //automatic search for user in user because user is a obj 
+    const data = await Post.find().populate('user');
+
+
+
   res.json(data)
 };
 
@@ -43,6 +49,7 @@ const getAllPosts = async (req, res) => {
 const likePost = async (req, res) => {
     const { id } = req.body;
 
+    console.log(id)
     try {
         if (!id) return res.sendStatus(400);
 
@@ -50,25 +57,27 @@ const likePost = async (req, res) => {
         const user = await User.findOne({ username: req.user }).exec();
         if (!user) return res.sendStatus(401);
 
+        const bool = Object.values(id)[0];
+        const key = Object.keys(id)[0];
+
         // Fetch posts from the database
         const posts = await Post.find();
+        
+        const  postUpdate = posts.find(val => val._id.toString() === key.toString());
+        if(!postUpdate) return res.sendStatus(404)
+    
+        //check for instuction
+        if(bool){
+            postUpdate.like = [...postUpdate.like , user.username ];
+            await postUpdate.save()
+        } else {
+            postUpdate.unlike = [...postUpdate.unlike , user.username ];
+            await postUpdate.save()
+        }
 
-        // Map through posts and update likes or unlikes
-        const postUpdate = posts.map(val => {
-            if (Object.keys(id).includes(val?._id.toString())) { // Ensure _id is converted to a string
-                if (id[val._id]) {
-                    val.like = [...(val.like || []), user._id];
-                } else {
-                    val.unlike = [...(val.unlike || []), user._id];
-                }
-            }
-            return val;
-        });
+        console.log(postUpdate)
 
-        // Save each updated post to the database
-        await Promise.all(postUpdate.map(post => post.save()));
-
-        res.sendStatus(200);
+        res.status(200).json({"msg" : "ok"});
     } catch (err) {
         console.error(err + " ; likePost");
         res.status(500).json(err);
@@ -78,10 +87,12 @@ const likePost = async (req, res) => {
 // Comment on a Post
 const commentOnPost = async (req, res) => {
 
-    const files = req.files
-    const images = files.map(val => val?.path)
+
+    const files = req?.files
+    const images = files?.map(val => val?.path)
     const { id , content } = req.body;
     const user = req.user
+
     
     if(!id || !content) return res.sendStatus(400);
 
@@ -89,16 +100,18 @@ const commentOnPost = async (req, res) => {
         const userId = await User.findOne({username : user}).exec();
         if(!userId) return res.sendStatus(401)
         const post = await Post.findById(id)
-        if(!post) return res.sendStatus(404);
+        console.log(!post)
+        if(!post) {return res.sendStatus(404); console.log('not found post')}
 
         await Post.create({
-            user : user,
+            user : userId,
             content : content,
             reply : id,
             images : images,
         });
 
-        return res.sendStatus(200);
+        console.log('succes')
+        return res.status(200).json({"msg" : "ok"});
 
     } catch (err) {
         console.log(err + " ; commentOnpost")
@@ -110,8 +123,8 @@ const getComment = async (req, res) => {
     const {id} = req.body;
 
     try {
-        const post = await Post.findAll({reply : id}).exec();
-        if(!post || !post.reply) return res.sendStatus(404);
+        const post = await Post.find({reply : id}).populate('user');
+        if(!post) return res.sendStatus(404);
 
         return res.json(post);
     } catch (err) {

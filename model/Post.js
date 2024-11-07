@@ -11,17 +11,16 @@ const postSchema = new mongoose.Schema({
         required: true,
         minlength: 1 // Ensure content has at least one character
     },
-    /*
+    
     reply: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
         default: null
     },
-    */
     like: {
         type: [String]
     },
-    unLike : {
+    unlike : {
         type : [String]
     },
     images: {

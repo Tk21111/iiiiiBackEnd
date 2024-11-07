@@ -9,6 +9,7 @@ const verifyJWT = (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
+
     //const cookie = req.cookies
     //console.log(cookie.jwt)
     //console.log(token)

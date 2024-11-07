@@ -3,6 +3,9 @@ const express = require("express");
 const router = express.Router();
 const postController = require("../../controller/Hpost");
 const multer = require("multer");
+const { pathChecker } = require("./pathFindder");
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 
 const storage = multer.diskStorage({
@@ -24,11 +27,11 @@ router.route("/")
     .post(upload.array('images') ,postController.createPost);
 router.route("/")
     .get(postController.getAllPosts);
-router.route("/post/like")
-    .post(postController.likePost);
-router.route("/post/comments")
-    .post(postController.commentOnPost);
-router.route("/post/comments")
+router.route("/")
+    .patch(postController.likePost);
+router.route("/comment")
+    .post(upload.array('images') ,postController.commentOnPost);
+router.route("/comment")
     .patch(postController.getComment);
 
 module.exports = router;
