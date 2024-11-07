@@ -41,37 +41,38 @@ const getAllPosts = async (req, res) => {
 // Like a Post
 //id = {postid : bool}
 const likePost = async (req, res) => {
-    const {id} = req.body;
+    const { id } = req.body;
 
-    try const postUpdate = post.map(val => {
-    if (key.Object(id).includes(val?._id)) {
-        if (id[val?._id]) {
-            val.like = [...(val.like || []), user?._id];
-        } else {
-            val.unlike = [...(val.unlike || []), user?._id];
-        }
-    }
-    return val;
-});
+    try {
+        if (!id) return res.sendStatus(400);
 
+        // Find the user making the request
+        const user = await User.findOne({ username: req.user }).exec();
+        if (!user) return res.sendStatus(401);
 
-        if(!id ) return res.sendStatus(400);
-        
-        const user = await User.findOne({username : req.user}).exec();
+        // Fetch posts from the database
+        const posts = await Post.find();
 
-        if(!user) return res.sendStatus(401);
-        
-        const post = await Post.find();
+        // Map through posts and update likes or unlikes
+        const postUpdate = posts.map(val => {
+            if (Object.keys(id).includes(val?._id.toString())) { // Ensure _id is converted to a string
+                if (id[val._id]) {
+                    val.like = [...(val.like || []), user._id];
+                } else {
+                    val.unlike = [...(val.unlike || []), user._id];
+                }
+            }
+            return val;
+        });
 
-        c
+        // Save each updated post to the database
+        await Promise.all(postUpdate.map(post => post.save()));
 
-        await post.save();
-        res.sendStatus(200)
+        res.sendStatus(200);
     } catch (err) {
-        console.log(err + " ; likePost")
-        res.status(500).json(err)
+        console.error(err + " ; likePost");
+        res.status(500).json(err);
     }
-    
 };
 
 // Comment on a Post
