@@ -43,7 +43,17 @@ const getAllPosts = async (req, res) => {
 const likePost = async (req, res) => {
     const {id} = req.body;
 
-    try {
+    try const postUpdate = post.map(val => {
+    if (key.Object(id).includes(val?._id)) {
+        if (id[val?._id]) {
+            val.like = [...(val.like || []), user?._id];
+        } else {
+            val.unlike = [...(val.unlike || []), user?._id];
+        }
+    }
+    return val;
+});
+
 
         if(!id ) return res.sendStatus(400);
         
@@ -53,8 +63,7 @@ const likePost = async (req, res) => {
         
         const post = await Post.find();
 
-        const postUpdate = post.map(val => { key.Object(id).includes(val?._id) ? id[val?._id] ? val.like = [...val.like , user?._id] : val.unlike = [...val.unlike , user?._id ]
-        : val}
+        c
 
         await post.save();
         res.sendStatus(200)
