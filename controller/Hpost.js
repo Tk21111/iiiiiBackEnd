@@ -47,7 +47,7 @@ const likePost = async (req, res) => {
 
         if(!id ) return res.sendStatus(400);
         
-        const user = awiat User.findOne({username : req.user}).exec();
+        const user = await User.findOne({username : req.user}).exec();
 
         if(!user) return res.sendStatus(401);
         
