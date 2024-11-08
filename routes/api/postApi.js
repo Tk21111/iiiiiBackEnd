@@ -33,5 +33,7 @@ router.route("/comment")
     .post(upload.array('images') ,postController.commentOnPost);
 router.route("/comment")
     .patch(postController.getComment);
+router.route("/")
+    .delete(postController.HdelPost)
 
 module.exports = router;

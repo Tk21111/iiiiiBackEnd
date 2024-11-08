@@ -11,7 +11,32 @@ const postSchema = new mongoose.Schema({
         required: true,
         minlength: 1 // Ensure content has at least one character
     },
-    
+    title : {
+        type : String,
+    },
+
+    //link with user can see
+    userlist : {
+        type : [String],
+        default : null
+    },
+
+    //mesh with other data
+    food : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Note',
+        default: null,
+    },
+    loca : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Loca',
+        default: null,
+    },
+    how : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'How',
+        default: null,
+    },
     reply: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',

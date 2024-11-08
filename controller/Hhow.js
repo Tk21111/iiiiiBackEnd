@@ -50,11 +50,7 @@ const Hsethow = async (req,res) => {
 
     const path = file.map(val => val?.path)
 
-    console.log(path)
-    console.log(req.body)
-
     const {tag , public ,des , food , ingredent}  = req.body;
-
 
    
     if(!req.user) return res.sendStatus(401);
@@ -126,7 +122,47 @@ const Hupdatehow = async (req,res) => {
     }
 }
 
+const HdelHow = async (req, res) =>  {
+
+    const {id} = req.id
+
+    if(!id) return res.sendStatus(400);
+
+    try {
+        const how = await  How.findById(id)
+        if(!how) return res.sendStatus(404);
+
+        how.images.forEach( p => {
+            fs.unlink(p, (err) => {
+                if (err) {
+                  // An error occurred while deleting the file
+                  if (err.code === 'ENOENT') {
+                    // The file does not exist
+                    console.error('The file does not exist');
+                  } else {
+                    // Some other error
+                    console.error(err.message);
+                  }
+                } else {
+                  // The file was deleted successfully
+                  console.log('The file was deleted');
+                }
+              });
+        });
+
+    const result = await how.deleteOne()
+
+    return res.json(result);
 
 
 
-module.exports = { Hsethow , Hgethow , Hupdatehow}
+    } catch (err) {
+        console.log(err + " ; delHow")
+        return res.json(err)
+    }
+}
+
+
+
+
+module.exports = { Hsethow , Hgethow , Hupdatehow , HdelHow}

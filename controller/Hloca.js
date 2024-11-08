@@ -65,30 +65,20 @@ const HcreateLoca = async (req, res) => {
 
 //@get 
 const HgetallLoca = async (req, res) => {
-    let loca = await Loca.find().select('-__v -getP').lean()
+    try {let loca = await Loca.find().select('-__v -getP').populate('user').populate('food')
 
-    loca = loca.filter(obj => (!obj.getP && !obj.getPId))
+    loca = loca.filter(obj => (!obj.getPId))
     // If no notes 
     if (!loca?.length) {
         return res.status(400).json({ message: 'No notes found' })
     }
 
-    // Add username to each note before sending the response 
-    // See Promise.all with map() here: https://youtu.be/4lqJBBEpjRE 
-    // You could also do this with a for...of loop
-    const notesWithUser = await Promise.all(loca.map(async (loca) => {
-        const note = await Note.findById(loca.food).lean().exec()
-        const user = await User.findById(loca.user).lean().exec()
-        return { 
-            ...loca, 
-            text: note?.text ,
-            userName : user?.username,
-            aka : user?.aka ,
-            imageUser : user?.image ,
-            exp : note?.timeOut ,
-            tag : note?.tag}
-    }))
-    res.json(notesWithUser)    
+    return res.json(loca)
+    } catch (err) {
+        console.log(err + " ; HgetallLoca")
+        return res.json(err)
+    }
+   
 };
 
 //@ req.user
@@ -101,18 +91,8 @@ const HgetallUserLoca = async (req, res) => {
         const user = await User.findOne({ username: name }).select('-__v').exec();
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        let result = await Loca.find({ user: user._id }).lean().exec();
+        const result = await Loca.find({ user: user._id }).populate('user').populate('food').populate('getPId');
 
-        result = await Promise.all(result.map(async (loca) => {
-            const note = await Note.findById(loca.food).lean().exec();
-            return {
-                ...loca,
-                text: note?.text,
-                userName : user?.username,
-                tag: note?.tag,
-                exp : note?.timeOut,
-            };
-        }));
         res.json(result);
     } catch (error) {
         console.error(error);
@@ -190,18 +170,17 @@ const HdeleteLoca = async (req , res) => {
 const Hdonate = async (req , res) => {
     const reqUser = req.user
 
-    console.log(reqUser)
 
     let loca = await Loca.findById({_id : req.body.id}).exec();
     let user = await User.findOne({username: reqUser}).exec();
     if(!loca){
-        res.sendStatus(404);
+        return res.sendStatus(404);
     } else {
         loca.getP =  reqUser;
         loca.getPId = user._id
         loca.save();
 
-        res.status(200).json({"message": "good"});
+        return res.status(200).json({"message": "good"});
     }
     
 };

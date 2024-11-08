@@ -4,12 +4,19 @@ const locaSchema = new mongoose.Schema({
     user : {
         type : mongoose.Schema.Types.ObjectId,
         required : true,
-        ref : 'User'
+        ref : 'User',
+        default : null
     },
     food : {
         type : mongoose.Schema.Types.ObjectId,
         require : true,
-        ref : 'Note'
+        ref : 'Note',
+        default : null
+    },
+    getPId: {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User',
+        default : null
     },
     district : {
         type : String,
@@ -34,13 +41,8 @@ const locaSchema = new mongoose.Schema({
         type: [String] 
     },
     organisation : {
-        type: Boolean
-    },
-    getP : {
-        type : String
-    },
-    getPId: {
-        type : String,
+        type: Boolean,
+        default : false
     },
     num : {
         type : Number,

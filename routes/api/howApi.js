@@ -35,5 +35,7 @@ router.route('/create')
 router.route('/update')
     .patch(HowController.Hupdatehow);
 
+router.route('/')
+    .delete(HowController.HdelHow);
 
 module.exports = router;
