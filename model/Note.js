@@ -15,7 +15,8 @@ const noteSchema = new mongoose.Schema({
         require : true
     },
     countExp : {
-        type : Number
+        type : [Number],
+        default : null
     },
     timeOut : {
         type : Date

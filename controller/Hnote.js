@@ -116,7 +116,7 @@ const Hupdate = async (req , res ) => {
         foundNote.done = done;
       }
       if (countExp !== undefined) {
-        foundNote.countExp = countExp;
+        foundNote.countExp = [...foundNote.countExp , countExp ];
       }
       if (date !== undefined) {
         foundNote.timeOut = date;
