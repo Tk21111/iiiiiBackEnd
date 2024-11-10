@@ -25,6 +25,11 @@ const userSchema = new mongoose.Schema({
     noti: {
         type : [Object],
     },
+    postsave : {
+        type : [mongoose.Schema.Types.ObjectId],
+        default : [],
+        ref : 'Post'
+    }
 })
 
 module.exports = mongoose.model('User' , userSchema)

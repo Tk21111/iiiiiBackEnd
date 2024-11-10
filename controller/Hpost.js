@@ -4,6 +4,7 @@ const Note = require('../model/Note');
 const How = require('../model/How');
 const Loca = require('../model/Loca');
 const { v4: uuid } = require('uuid');
+const fs = require('fs').promises;
 
 // Create Post
 //@ content , title //@ not require loca , food , how 
@@ -78,10 +79,30 @@ const likePost = async (req, res) => {
         if (!postUpdate) return res.sendStatus(404);
 
         if (bool) {
-            postUpdate.like = [...postUpdate.like, user.username];
+            // Check if the user has already liked the post
+            if (postUpdate.like.includes(req.user)) {
+                // Remove the user from the like list
+                postUpdate.like = postUpdate.like.filter(val => val !== req.user);
+            } else {
+                // Add the user to the like list
+                postUpdate.like = [...postUpdate.like, user.username];
+                // Ensure user is not in the unlike list
+                postUpdate.unlike = postUpdate.unlike.filter(val => val !== req.user);
+            }
         } else {
-            postUpdate.unlike = [...postUpdate.unlike, user.username];
+            // Check if the user has already unliked the post
+            if (postUpdate.unlike.includes(req.user)) {
+                // Remove the user from the unlike list
+                postUpdate.unlike = postUpdate.unlike.filter(val => val !== req.user);
+            } else {
+                // Add the user to the unlike list
+                postUpdate.unlike = [...postUpdate.unlike, user.username];
+                // Ensure user is not in the like list
+                postUpdate.like = postUpdate.like.filter(val => val !== req.user);
+            }
         }
+        
+        // Save the post update after modification
         await postUpdate.save();
 
         res.status(200).json({ msg: "Post updated successfully" });
@@ -90,6 +111,56 @@ const likePost = async (req, res) => {
         res.status(500).json({ error: "Failed to update post" });
     }
 };
+
+const SavePost = async (req, res) => {
+    const { id } = req.body;
+    if (!id) return res.sendStatus(400);
+
+    try {
+        // Fetch user and post using `await`
+        const user = await User.findOne({ username: req.user }).exec();
+        if (!user) return res.sendStatus(401);
+
+        const post = await Post.findById(id).exec();
+        if (!post) return res.sendStatus(404);
+
+        // Avoid adding duplicate posts
+        if (!user?.postsave?.includes(id)) {
+            user.postsave = [...user.postsave, id];
+            await user.save();
+        }
+
+        return res.json({ "msg": "ok" });
+    } catch (err) {
+        console.error(err + "  ; SavePost");
+        return res.status(500).json({ "error": err.message });
+    }
+};
+
+
+const getSavePost = async (req, res) => {
+    try {
+        // Check if user is authenticated
+        if (!req.user) {
+            return res.status(401).json({ error: "User is not authenticated" });
+        }
+
+        // Find the user and populate the saved posts
+        const post = await User.findOne({ username: req.user }).populate('postsave');
+
+        // Check if user exists
+        if (!post) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        return res.json(post.postsave); // Return the populated user document
+    } catch (err) {
+        console.error(err + " ; getSavePost");
+        return res.status(500).json({ error: "An error occurred while fetching posts" });
+    }
+};
+
+
 
 // Comment on a Post
 const commentOnPost = async (req, res) => {
@@ -138,13 +209,15 @@ const getComment = async (req, res) => {
 
 const HdelPost = async (req, res) =>  {
 
-    const {id , user} = req.id
+    const {id } = req.body
+    const user = req.user;
 
     if(!id || !user) return res.sendStatus(400);
-
+    
+    
     try {
         const post = await  Post.findById(id).populate('user');
-
+        
         if(post.user.username !== user){
             return res.sendStatus(401);
         }
@@ -169,7 +242,10 @@ const HdelPost = async (req, res) =>  {
               });
         });
 
+    
     const result = await post.deleteOne()
+    const resultReply = await Post.deleteMany({ reply : id })
+   
 
     return res.json(result);
 
@@ -179,4 +255,4 @@ const HdelPost = async (req, res) =>  {
     }
 }
 
-module.exports = { createPost, getAllPosts, commentOnPost, likePost, getComment , HdelPost };
+module.exports = { createPost, getAllPosts, commentOnPost, likePost, getComment , HdelPost , SavePost , getSavePost};

@@ -124,7 +124,7 @@ const Hupdatehow = async (req,res) => {
 
 const HdelHow = async (req, res) =>  {
 
-    const {id} = req.id
+    const {id} = req.body
 
     if(!id) return res.sendStatus(400);
 

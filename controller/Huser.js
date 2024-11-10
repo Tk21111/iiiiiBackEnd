@@ -1,8 +1,9 @@
 const User = require('../model/User');
+const Post = require('../model/Post');
+
 
 const updateProfile = async (req,res) => {
 
-    console.log(req.body)
     //image files
     try{
         let paths = req.files;

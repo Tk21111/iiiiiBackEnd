@@ -29,6 +29,10 @@ router.route("/")
     .get(postController.getAllPosts);
 router.route("/")
     .patch(postController.likePost);
+router.route("/save")
+    .patch(postController.SavePost);
+router.route("/save")
+    .get(postController.getSavePost);
 router.route("/comment")
     .post(upload.array('images') ,postController.commentOnPost);
 router.route("/comment")
