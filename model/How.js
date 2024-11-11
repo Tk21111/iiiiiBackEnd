@@ -6,7 +6,7 @@ const howSchema = new mongoose.Schema({
         required : true,
         ref : 'User'
     },
-    food : String,
+    name : String,
     public : Boolean ,
     tag : [String],
     des : String,

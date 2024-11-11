@@ -50,11 +50,13 @@ const Hsethow = async (req,res) => {
 
     const path = file.map(val => val?.path)
 
-    const {tag , public ,des , food , ingredent}  = req.body;
+    const {tag , public ,des , name , ingredent}  = req.body;
 
    
     if(!req.user) return res.sendStatus(401);
-    //if(!tag || !des || !food) return res.sendStatus(400);
+
+    console.log(req.body)
+    if(!tag || !des || !name) return res.sendStatus(400);
 
     
     try { 
@@ -62,7 +64,7 @@ const Hsethow = async (req,res) => {
 
         await How.create({
         user : userId._id,
-        food : food,
+        name : name,
         tag : tag,
         ingredent : ingredent,
         public: public,
