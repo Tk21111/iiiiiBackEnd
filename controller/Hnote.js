@@ -55,11 +55,7 @@ const Hcreate = async (req, res) => {
         
         if (Array.isArray(notes)) {
             for (let f ;f < notes.length; f++){
-                //wtf
-                const du = await Note.findOne({ text: notes[i].text }).lean().exec();
-                if (duplicate) {
-                    return res.status(409).json({ noteId: duplicate._id });
-                }
+
             }
             for (let i = 0; i < notes.length; i++) {
 
