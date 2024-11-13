@@ -146,8 +146,15 @@ const getSavePost = async (req, res) => {
         }
 
         // Find the user and populate the saved posts
-        const post = await User.findOne({ username: req.user }).populate('postsave');
-
+        const post = await User.findOne({ username: req.user })
+        .populate('postsave')
+        .populate({
+            path: 'postsave',
+            populate: {
+                path: 'user'
+            }
+        });
+    
         // Check if user exists
         if (!post) {
             return res.status(404).json({ error: "User not found" });
