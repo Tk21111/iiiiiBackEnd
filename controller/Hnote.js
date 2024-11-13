@@ -106,7 +106,7 @@ const Hupdate = async (req , res ) => {
     const foundNote = await Note.findById(id)
     if (!foundNote) return res.status(404).json({ message : "Didn't find note"});
     if (count !== undefined) {
-        foundNote.count = count;
+        foundNote.count = [...foundNote.count , count ];
       }
       if (done !== undefined) {
         foundNote.done = done;

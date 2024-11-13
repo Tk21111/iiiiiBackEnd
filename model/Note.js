@@ -11,7 +11,7 @@ const noteSchema = new mongoose.Schema({
         required : true
     },
     count : {
-        type : Number,
+        type : [Number],
         require : true
     },
     countExp : {
