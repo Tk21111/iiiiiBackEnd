@@ -97,7 +97,7 @@ const Hcreate = async (req, res) => {
 //@patch
 
 const Hupdate = async (req , res ) => {
-    const {text , id , count , countExp , date ,done , tag } =req.body;
+    const {text , id , count , countExp , date ,done , tag } = req.body;
 
     if ( !id) {
         console.log(400);
