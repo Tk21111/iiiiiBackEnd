@@ -31,16 +31,9 @@ const Hauth = async(req, res) => {
                 }, process.env.REFRESH_TOKEN, 
                 { expiresIn: '7d' });
 
+              
 
-        res.cookie('jwt', refreshToken, {
-            httpOnly: true,
-            secure: true, // Ensure secure is true in production
-            sameSite: 'Strict', 
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        });
-                
-
-        res.status(200).json({ accessToken , image : (found?.image || null ) , aka : (found?.aka) || null});
+        res.status(200).json({ accessToken , refreshToken , image : (found?.image || null ) , aka : (found?.aka) || null});
     } else {
         console.log('!match')
         res.sendStatus(401);

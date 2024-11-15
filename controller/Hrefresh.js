@@ -2,10 +2,9 @@ const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 
 const Hrefresh = (req, res) => {
-    const cookies = req.cookies
-    
-    if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' })
-    const refreshToken = cookies.jwt
+
+
+    const {refreshToken} = req.body
 
     jwt.verify(
         refreshToken,
