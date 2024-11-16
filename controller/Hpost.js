@@ -4,6 +4,7 @@ const Note = require('../model/Note');
 const How = require('../model/How');
 const Loca = require('../model/Loca');
 const { v4: uuid } = require('uuid');
+const path = require('path');
 const fs = require('fs').promises;
 
 // Create Post
@@ -53,8 +54,30 @@ const createPost = async (req, res) => {
 // Get All Posts
 const getAllPosts = async (req, res) => {
     try {
-        //if food : null still working nice
-        const data = await Post.find().populate('user').populate('food').populate('loca').populate('how');
+        //if food : null still working //nice
+        const data = await Post.find()
+            .populate('user')
+            .populate('food')
+            .populate('loca')
+            .populate({
+                path: 'loca',
+                populate: [
+                    {
+                        path: 'user',
+                        select: '-password -roles -noti -postsave'
+                    },
+                    {
+                        path: 'getPId',
+                        select: '-password -roles -noti -postsave'
+                    },
+                    {
+                        path : 'food'
+                    }
+                        
+                ]
+            })
+            .populate('how');
+
         res.json(data);
     } catch (err) {
         console.error(err + " ; getAllPosts");
@@ -126,7 +149,13 @@ const SavePost = async (req, res) => {
 
         // Avoid adding duplicate posts
         if (!user?.postsave?.includes(id)) {
+            console.log('no')
             user.postsave = [...user.postsave, id];
+            await user.save();
+        } else {
+            console.log('yes')
+            //postsave haven't populate yet so it only have id
+            user.postsave = user.postsave.filter(val => val.toString() !== id);
             await user.save();
         }
 

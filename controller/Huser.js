@@ -22,32 +22,36 @@ const updateProfile = async (req,res) => {
         }
         
         await user.save();
-        res.status(200).json({ message : 'userProfile have been update'})
-    } catch{
-        console.log('somethung fucj')
+        return res.status(200).json({ message : 'userProfile have been update'})
+    } catch (err) {
+        console.log( err + '; updateProfile')
+        return res.json(err)
     }
     
 };
 
+//@ userId || usernaem
 const getUser = async (req,res) => {
 
 
     try {
-        if(req?.body?.userId === "undefined"){
-            res.status(400).json({"message" : "bad requset"})
-        } else{
-            const user = await User.findById(req.body.userId)
-        .select('-password -roles')
-        .exec();
-          if(!user){
-            res.sendStatus(404);
-        }else{
-            res.json(user);
+        const {userId , username} = req.body;
+
+        let user;
+
+        if(username){
+            user = await User.findOne({username : username}).select('-password -roles').exec()
+        } else if (userId) {
+             user = await User.findById(userId)
+            .select('-password -roles')
+            .exec(); 
         }
-        
-        }
+
+        if(!user) return res.sendStatus(404);
+    
+        return res.json(user);
     } catch (err) {
-        console.log(err)
+        console.log(err + " ; getUser")
         res.status(500).json({"message" : err})
     }   
 }

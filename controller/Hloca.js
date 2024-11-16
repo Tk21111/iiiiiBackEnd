@@ -91,9 +91,33 @@ const HgetallUserLoca = async (req, res) => {
         const user = await User.findOne({ username: name }).select('-__v').exec();
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        const result = await Loca.find({ user: user._id }).populate('user').populate('food').populate('getPId');
+        let result = await Loca.find({ user: user._id })
+        .populate({ 
+            path: 'user', 
+            select: '-password -noti -roles -postsave' // Exclude sensitive fields 
+        })
+        .populate({
+            path: 'getPId',
+            select: '-password -noti -roles -postsave' // Exclude sensitive fields
+        })
+        .populate('food') // If no sensitive fields, regular populate works
+        .lean(); // Convert to plain objects for easier manipulation
 
-        res.json(result);
+
+        result = result.map((val) => {return { ...val , own : true }})
+        let userGetResult = await Loca.find({getPId : user._id}).populate({ 
+            path: 'user', 
+            select: '-password -noti -roles -postsave ' // Exclude sensitive fields 
+        })
+        .populate({
+            path: 'getPId',
+            select: '-password -noti -roles -postsave' // Exclude sensitive fields
+        })
+        .populate('food') // If no sensitive fields, regular populate works
+        .lean(); // Convert to plain objects for easier manipulation
+        userGetResult = userGetResult.map((val) => {return { ...val, own : false }}) // Convert Mongoose doc to plain object and add `own`
+
+        res.json(result.concat(userGetResult));
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
@@ -173,10 +197,14 @@ const Hdonate = async (req , res) => {
 
     let loca = await Loca.findById({_id : req.body.id}).exec();
     let user = await User.findOne({username: reqUser}).exec();
+
     if(!loca){
         return res.sendStatus(404);
+
+    } else if (loca.getPId){
+        return res.sendStatus(403);   
     } else {
-        loca.getP =  reqUser;
+
         loca.getPId = user._id
         loca.save();
 
