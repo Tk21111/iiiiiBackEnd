@@ -26,7 +26,7 @@ const logEvents = async(message) => {
     //url === index page or something 
 const logger = (req, res, next) => {
     logEvents(`${req.method}\t${req.headers.origin}\t${req.url}`, 'reqLog.txt');
-    console.log(`${req.method} ${req.path}`);
+    console.log(`${req.method} ${req.path} ${req.user || null}`);
     next();
 }
 

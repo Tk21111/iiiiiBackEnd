@@ -118,40 +118,46 @@ const Hupdate = async (req , res ) => {
         return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const foundNote = await Note.findById(id);
+    try{
+      const foundNote = await Note.findById(id);
 
-    if (!foundNote) return res.status(404).json({ message : "Didn't find note"});
-      if (count !== undefined) {
-        if(update){
-          foundNote.count = [...foundNote.count , count ];
-        } else {
-          foundNote.count[foundNote.count.length - 1 ] = count;
+      if (!foundNote) return res.status(404).json({ message : "Didn't find note"});
+        if (count !== undefined) {
+          if(update){
+            foundNote.count = [...foundNote.count , count ];
+          } else {
+            foundNote.count[foundNote.count.length - 1 ] = count;
+          }
+          }
+        if (done !== undefined) {
+          foundNote.done = done;
         }
+        if (countExp !== undefined) {
+          if(update){
+            foundNote.countExp = [...foundNote.countExp , countExp ];
+          } else {
+            foundNote.countExp[foundNote.countExp.length -1] = countExp;
+          }
+          
         }
-      if (done !== undefined) {
-        foundNote.done = done;
-      }
-      if (countExp !== undefined) {
-        if(update){
-          foundNote.countExp = [...foundNote.countExp , countExp ];
-        } else {
-          foundNote.countExp[foundNote.countExp.length -1] = countExp;
+        if (date !== undefined) {
+          foundNote.timeOut = date;
         }
-        
-      }
-      if (date !== undefined) {
-        foundNote.timeOut = date;
-      }
-      if (tag !== undefined) {
-        foundNote.tag = tag;
-      }
-      if (text !== undefined) {
-        foundNote.text = text;
-      }
+        if (tag !== undefined) {
+          foundNote.tag = tag;
+        }
+        if (text !== undefined) {
+          foundNote.text = text;
+        }
 
-    foundNote.save();
+      foundNote.save();
 
-    res.status(200).json({ message : 'note have been update'})
+      return res.status(200).json({ message : 'note have been update'})
+    } catch (err) {
+      console.log(err + " ; Hupdate")
+      return res.json(err)    
+    }
+    
 
 }
 
