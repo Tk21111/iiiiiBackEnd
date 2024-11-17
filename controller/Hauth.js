@@ -22,7 +22,7 @@ const Hauth = async(req, res) => {
                 }
             }, 
             process.env.ACCESS_TOKEN, 
-            { expiresIn: '1h' });
+            { expiresIn: '1d' });
 
 
         const refreshToken = jwt.sign(

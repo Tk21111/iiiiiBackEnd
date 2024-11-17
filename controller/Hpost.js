@@ -56,7 +56,10 @@ const getAllPosts = async (req, res) => {
     try {
         //if food : null still working //nice
         const data = await Post.find()
-            .populate('user')
+        .populate({
+            path: 'user',
+            select : '-password -roles -noti -postsave'
+        })
             .populate('food')
             .populate('loca')
             .populate({

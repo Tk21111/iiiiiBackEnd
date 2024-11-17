@@ -7,13 +7,27 @@ const fs = require('fs')
 
 
 const Hgetall = async (req, res) => {
-    const notes = await Note.find().lean()
 
-    // If no notes 
-    if (!notes?.length) {
-        return res.status(400).json({ message: 'No notes found' })
+    const username = req.user;
+
+    try {
+      const user =  await User.findOne({"username" : username}).exec();
+
+      const notes = await Note.find({"user" : user});
+
+      // If no notes 
+      if (!notes) {
+          return res.status(400).json({ message: 'No notes found' })
+      }
+
+      res.json(notes)
+    } catch (err) {
+      console.log(err + " ; Hgetall")
+      return res.sendStatus(500)
     }
+    
 
+    /*
     // Add username to each note before sending the response 
     // See Promise.all with map() here: https://youtu.be/4lqJBBEpjRE 
     // You could also do this with a for...of loop
@@ -23,6 +37,7 @@ const Hgetall = async (req, res) => {
     }))
 
     res.json(notesWithUser)
+    */
 
     
 };
