@@ -32,8 +32,6 @@ const createPost = async (req, res) => {
             const locaId = await Loca.findById(loca).populate('getPId');
 
             if (!locaId) return res.status(404).json({ msg: "cannot find loca" });
-            console.log(userId)
-            console.log(locaId)
             postData.loca = locaId;
             postData.userlist = [userId.username, locaOwner];
         } else if (how) {
@@ -42,9 +40,10 @@ const createPost = async (req, res) => {
             postData.how = howId;
         }
 
-        await Post.create(postData);
+        const success = await Post.create(postData);
+        console.log(success)
         console.log(`Successfully created post with ${food ? "food" : loca ? "loca" : how ? "how" : "default"}`);
-        return res.status(200).json({ msg: "Post created successfully" });
+        return res.status(200).json(success);
     } catch (err) {
         console.error(err + " ; createPost");
         return res.status(500).json({ error: "Unable to create post. Please try again later." });
@@ -152,11 +151,11 @@ const SavePost = async (req, res) => {
 
         // Avoid adding duplicate posts
         if (!user?.postsave?.includes(id)) {
-            console.log('no')
+
             user.postsave = [...user.postsave, id];
             await user.save();
         } else {
-            console.log('yes')
+
             //postsave haven't populate yet so it only have id
             user.postsave = user.postsave.filter(val => val.toString() !== id);
             await user.save();
@@ -217,6 +216,7 @@ const commentOnPost = async (req, res) => {
         const post = await Post.findById(id);
         if (!post) return res.status(404).json({ msg: "Post not found" });
 
+
         await Post.create({
             user: userId,
             content,
@@ -224,7 +224,7 @@ const commentOnPost = async (req, res) => {
             images,
         });
 
-        res.status(200).json({ msg: "Comment added successfully" });
+        return res.status(200).json({ msg: "Comment added successfully" });
     } catch (err) {
         console.error(err + " ; commentOnPost");
         res.status(500).json({ error: "Failed to add comment" });
