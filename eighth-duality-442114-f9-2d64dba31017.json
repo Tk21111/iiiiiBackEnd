@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "eighth-duality-442114-f9",
+  "private_key_id": "12841cbaf45a070265fa2b12c75b3c9e5c5800b4",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQChPSLxvMg3l88J\n76WTlN3tg81NmKINAeC58X4lqaEeZL41rreFCTeg/2Xtxbm/6MS1YJJpon0ibevR\nlLVtdBIhiKAths8ZSdtN0zGX1vG//gMy+PtuacLgUaW85wH2CjSea2vKK0doalGp\nTx/Vp6HTyjAU33YKGjIpcrcKM+mTKEPf/IDhQqv/uHQEAmdahLSDPQX9oLCR7yOS\n/dHDxNnA4tyC9+fVEDEHm6CKuhGKcbX+bZPPkBNooKphJoqI+JsMpoqf99ZpkXRO\n3bXtGUGZDQKQDXBe4ZxsKR8i/feFwBC9C69G1L+F1MRdOcEI7OplDgbun/CGXpK+\nUrZ1KtKDAgMBAAECggEAI0fBUavBE4kAIGhzjmtQdBwW3Be9vaLfjVAuDgej3Yal\nqBFmzpFJvsyjfPd6wWcpQ5ax8rM/Nj1fECi92gk/vl6qzctlnV7vwYOoolTB6QSn\npoucWHiDz5mN7luNrkxlXxSaLU5y/YHmBGnvyUw4uKLRCoAqz+MTfsY/Dth1D2Gz\nFYeSJad8clDY+hHkaGZS1KZtEvyH6/fNILy5G0VOPlVhPZuM5aNcyZ83SmstYkhK\nj2gRZXX+xpsxwrwDW9wcpbejg4bcnExCqYLzAYpcg3FZv8dTdOfxNkmp2TW3cNNY\n2mP3SI/zsYhkaUWzmsqgFqMgQImjb1lF4mCHW6UxIQKBgQDVDYS+X6JxCuQe2xvD\n0NEencO2O2lQ07OgioSwSmvSOgD9egC0CZWXjZYj2ejxf+TvPcXbxQPnLkM4d4+k\ndRpWdoOygVWUNMAVjPifBqCD9PDE56dMT4QcbdTbN0068G/BmdznzeQ2eHycc0JU\nW2kLEHr9HWP7XJ3PcusbcxS9nwKBgQDBvciHW63CrAp5GP87BrB1ERUF5Zs5B9wX\nIAFGLZyOETUkLTojkFkQyG2Vp4+lnug8XjUFtN43kjvgWOJE1tLDFwYLZ+2XoEW2\noTt8E9z2PGRFWYtuCQVFwXAKdPIQXyLc/tI0JZ6NvRRauigJxJyZiqUNm6TbgoBU\ni8Ww7XB4nQKBgHRa/bQ65qx2FkADyhYXZR4ja0+LAulxtRhoji75dglKRGAq0VeC\nJICwgt7xk5bREmbWhciQwKDxUyTzpy9aBRhTgXlrySE37e/XHbE8HU3z58qh+Wxj\nwPMFyMowWa1mwqIpNcwjVg+pneSTzhXkFmpEhebWtlQBMO6rBFvpbdphAoGAHq34\n9UZVS8CGoAqPUD+M7dzYoWhsniladucAjKZoZi7fZW0sCbmwAPJcOBiirK1vRS/9\n4Xt0vQQRK0OoARKrqW0Z7fB1NU+R+oupqcpTcUK69ihp5fDTvuoU3fMK6gDGuow3\nqT5Tz0oj0QItmO5jhgTogjEleAVAYSMJGS1gZBkCgYEAwi5qD2QQRH21lUwahWU5\nsMirH4DYuhMsIy0UI2f87wO2VqEHhWYgYXt9baJFezHAtgwnlcNGlmoprV7S/nT6\nzqBqDve00DgnyIaRz56Y/0ytrFf/B5k4rzql/Qx8IeT+ZB6JMOhKPapplMHVXjJL\n0uuuSBsWv1XQfQzspyYHiSI=\n-----END PRIVATE KEY-----\n",
+  "client_email": "all-754@eighth-duality-442114-f9.iam.gserviceaccount.com",
+  "client_id": "107504717148631921556",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/all-754%40eighth-duality-442114-f9.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
