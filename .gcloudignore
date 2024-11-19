@@ -1,0 +1,21 @@
+# Exclude node_modules
+node_modules/
+
+# Exclude environment files
+.env
+
+# Exclude Git files
+.git/
+.gitignore
+
+# Exclude local logs
+*.log
+
+# Exclude Docker files (if not used for deployment)
+Dockerfile
+docker-compose.yml
+
+# Exclude test files
+tests/
+*.spec.js
+*.test.js
