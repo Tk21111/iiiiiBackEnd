@@ -29,6 +29,14 @@ const userSchema = new mongoose.Schema({
         type : [mongoose.Schema.Types.ObjectId],
         default : [],
         ref : 'Post'
+    },
+    sex : {
+        type : Boolean,
+        require : true
+    },
+    age : {
+        type : Number,
+        require : true
     }
 })
 
