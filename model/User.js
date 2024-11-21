@@ -30,6 +30,9 @@ const userSchema = new mongoose.Schema({
         default : [],
         ref : 'Post'
     },
+    name : {
+        type : String
+    },
     sex : {
         type : Boolean,
         require : true
