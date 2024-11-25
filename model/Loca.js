@@ -53,6 +53,11 @@ const locaSchema = new mongoose.Schema({
     longitude : {
         type : String
     },
+    post : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Post',
+        default : null
+    }
 
 })
 

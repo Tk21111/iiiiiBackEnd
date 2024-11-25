@@ -24,12 +24,13 @@ const createPost = async (req, res) => {
         let postData = { user: userId, content, title, images };
 
         // Populate `food`, `loca`, or `how` fields based on availability
+        let locaId
         if (food) {
             const foodId = await Note.findById(food);
             if (!foodId) return res.status(404).json({ msg: "cannot find food" });
             postData.food = foodId;
         } else if (loca && locaOwner) {
-            const locaId = await Loca.findById(loca).populate('getPId');
+            locaId = await Loca.findById(loca).populate('getPId');
 
             if (!locaId) return res.status(404).json({ msg: "cannot find loca" });
             postData.loca = locaId;
@@ -41,7 +42,11 @@ const createPost = async (req, res) => {
         }
 
         const success = await Post.create(postData);
-        console.log(success)
+        if(loca && locaOwner){
+            locaId.post = success._id
+            locaId.save();
+            console.log("post save")
+        }
         console.log(`Successfully created post with ${food ? "food" : loca ? "loca" : how ? "how" : "default"}`);
         return res.status(200).json(success);
     } catch (err) {
