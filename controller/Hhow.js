@@ -59,15 +59,6 @@ const Hsethow = async (req,res) => {
     if(!tag || !des || !name) return res.sendStatus(400);
 
     //i gave up on writing this shit so chat gpt it is
-    ingredent = JSON.parse(ingredent).reduce((acc, obj) => {
-        const key = Object.keys(obj)[0]; // Get the first key of the object
-        const innerObj = obj[key]; // Access the inner object
-        const name = innerObj['0']; // Get the value at '0' as the key
-        const value = parseInt(innerObj['1'], 10); // Parse the value at '1' as a number
-        acc[name] = value; // Add the key-value pair to the accumulator
-        return acc;
-      }, {});
-    
     
     try { 
         const userId = await User.findOne({username : req.user}).exec()
@@ -76,7 +67,7 @@ const Hsethow = async (req,res) => {
         user : userId._id,
         name : name,
         tag : tag,
-        ingredent : ingredent,
+        ingredent : (JSON.parse(ingredent)),
         public: public,
         des : des ,
         images : path || null

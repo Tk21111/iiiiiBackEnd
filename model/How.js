@@ -10,7 +10,7 @@ const howSchema = new mongoose.Schema({
     public : Boolean ,
     tag : [String],
     des : String,
-    ingredent : Object,
+    ingredent : [Object],
     images : [String],
 
 })
