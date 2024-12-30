@@ -135,7 +135,10 @@ const HdelHow = async (req, res) =>  {
     try {
         const how = await  How.findById(id)
         if(!how) return res.sendStatus(404);
+        const userHow = await User.findById(how.user);
 
+        if(userHow.username !== req.user ) return res.sendStatus(403);
+        
         how.images.forEach( p => {
             fs.unlink(p, (err) => {
                 if (err) {
