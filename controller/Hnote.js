@@ -91,6 +91,7 @@ const Hcreate = async (req, res) => {
                     user: foundUser._id,
                     timeOut: note.date,
                     tag: note.tag,
+                    typeCount : note.typeCount,
                     countExp: note.countExp,
                     done: note.done,
                     images: filePaths,
@@ -112,7 +113,7 @@ const Hcreate = async (req, res) => {
 //@patch
 
 const Hupdate = async (req , res ) => {
-    const {text , id , count , countExp , date ,done , tag , update} = req.body;
+    const {text , id , count , countExp , date ,done , tag , update , typeCount} = req.body;
 
     if ( !id && update === undefined) {
         return res.status(400).json({ message: 'Missing required fields' });
@@ -148,6 +149,9 @@ const Hupdate = async (req , res ) => {
         }
         if (text !== undefined) {
           foundNote.text = text;
+        }
+        if (typeCount !== undefined) {
+          foundNote.typeCount = typeCount
         }
 
       foundNote.save();

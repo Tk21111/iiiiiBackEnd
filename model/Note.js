@@ -10,6 +10,10 @@ const noteSchema = new mongoose.Schema({
         type : String,
         required : true
     },
+    typeCount : {
+        type : String,
+        required : true
+    },
     count : {
         type : [Number],
         require : true
