@@ -4,6 +4,26 @@ const Loca = require('../model/Loca');
 
 const fs = require('fs');
 const { count } = require('console');
+
+const { Storage } = require('@google-cloud/storage');
+const storage = new Storage({
+    projectId: 'back-iiiii', // Replace with your Google Cloud Project ID
+    keyFilename: 'back-iiiii-3f4f26c39c9e.json' // Path to your service account key file
+});
+const bucketName = 'back-iiiii-img';
+
+const deleteFromGCS = async (fileName) => {
+    try {
+        const file = storage.bucket(bucketName).file(fileName);
+        await file.delete();
+        console.log(`File ${fileName} deleted successfully.`);
+        return { success: true, message: `File ${fileName} deleted successfully.` };
+    } catch (error) {
+        console.error(`Failed to delete file ${fileName}:`, error);
+        return { success: false, message: `Failed to delete file ${fileName}: ${error.message}` };
+    }
+};
+
 //@ username, food , town , subdistrict , county , more
 //@post
 const HcreateLoca = async (req, res) => {
@@ -39,8 +59,8 @@ const HcreateLoca = async (req, res) => {
                 role = true;
             }
         };
-        // Save image paths to the database
-        const imagePaths = images?.map(file => file.path);
+
+        
 
         const loca = await Loca.create({ 
             food, 
@@ -52,7 +72,7 @@ const HcreateLoca = async (req, res) => {
             more,
             latitude,
             longitude,
-            images: imagePaths , 
+            images: req.body?.fileInfo || null, 
             organisation: role , 
             num });
         return res.status(201).json({ message: 'Created', loca });
@@ -163,28 +183,28 @@ const HdeleteLoca = async (req , res) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
    
-    //from https://byby.dev/node-delete-file
-    //delete image
-    deleteLoca.images.forEach( p => {
-        fs.unlink(p, (err) => {
-            if (err) {
-              // An error occurred while deleting the file
-              if (err.code === 'ENOENT') {
-                // The file does not exist
-                console.error('The file does not exist');
-              } else {
-                // Some other error
-                console.error(err.message);
-              }
-            } else {
-              // The file was deleted successfully
-              console.log('The file was deleted');
-            }
-          });
-    });
     
 
     if (!deleteLoca) return res.status(404).json({message : 'note is not found'});
+
+    if (deleteLoca.images) {
+            const deleteResults = await Promise.all(
+                deleteLoca.images.map(async (info) => {
+                    try {
+                        const result = await deleteFromGCS(info.fileName);
+                        return result.success; // Return whether deletion was successful
+                    } catch (err) {
+                        console.error(`Error deleting file ${info.fileName}:`, err);
+                        return false; // Return false if deletion fails
+                    }
+                })
+            );
+
+            // Check if all deletions succeeded
+            if (!deleteResults.every((result) => result)) {
+                return res.status(500).json({ message: "Failed to delete all images" });
+            }
+        }
 
     const result = await deleteLoca.deleteOne()
     res.json({message : id + 'note deleted'})

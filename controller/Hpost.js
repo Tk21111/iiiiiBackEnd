@@ -7,11 +7,30 @@ const { v4: uuid } = require('uuid');
 const path = require('path');
 const fs = require('fs').promises;
 
+const { Storage } = require('@google-cloud/storage');
+const storage = new Storage({
+    projectId: 'back-iiiii', // Replace with your Google Cloud Project ID
+    keyFilename: 'back-iiiii-3f4f26c39c9e.json' // Path to your service account key file
+});
+const bucketName = 'back-iiiii-img';
+
+const deleteFromGCS = async (fileName) => {
+    try {
+        const file = storage.bucket(bucketName).file(fileName);
+        await file.delete();
+        console.log(`File ${fileName} deleted successfully.`);
+        return { success: true, message: `File ${fileName} deleted successfully.` };
+    } catch (error) {
+        console.error(`Failed to delete file ${fileName}:`, error);
+        return { success: false, message: `Failed to delete file ${fileName}: ${error.message}` };
+    }
+};
+
+
 // Create Post
 //@ content , title //@ not require loca , food , how 
 const createPost = async (req, res) => {
-    const file = req.files;
-    const images = file?.map(val => val?.path) || [];
+
     const user = req.user;
     const { food, loca, how, content, title , locaOwner} = req.body;
 
@@ -21,7 +40,7 @@ const createPost = async (req, res) => {
         const userId = await User.findOne({ username: user }).exec();
         if (!userId) return res.sendStatus(401);
 
-        let postData = { user: userId, content, title, images };
+        let postData = { user: userId, content, title, images : req.body.fileInfo };
 
         // Populate `food`, `loca`, or `how` fields based on availability
         let locaId
@@ -268,23 +287,25 @@ const HdelPost = async (req, res) =>  {
 
         if(!post) return res.sendStatus(404);
 
-        post.images.forEach( p => {
-            fs.unlink(p, (err) => {
-                if (err) {
-                  // An error occurred while deleting the file
-                  if (err.code === 'ENOENT') {
-                    // The file does not exist
-                    console.error('The file does not exist');
-                  } else {
-                    // Some other error
-                    console.error(err.message);
-                  }
-                } else {
-                  // The file was deleted successfully
-                  console.log('The file was deleted');
-                }
-              });
-        });
+        if (post.images) {
+            const deleteResults = await Promise.all(
+                post.images.map(async (info) => {
+                    try {
+                        const result = await deleteFromGCS(info.fileName);
+                        return result.success; // Return whether deletion was successful
+                    } catch (err) {
+                        console.error(`Error deleting file ${info.fileName}:`, err);
+                        return false; // Return false if deletion fails
+                    }
+                })
+            );
+
+            // Check if all deletions succeeded
+            if (!deleteResults.every((result) => result)) {
+                return res.status(500).json({ message: "Failed to delete all images" });
+            }
+        }
+
 
     
     const result = await post.deleteOne()

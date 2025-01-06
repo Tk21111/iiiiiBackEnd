@@ -6,15 +6,15 @@ const updateProfile = async (req,res) => {
 
     //image files
     try{
-        let paths = req.files;
+        
         const user = await User.findOne({ username: req.user }).exec();
         if(req.body.username){
             user.aka = req.body.username
         }
-        if(paths){
+        if(req.body.fileInfo){
             //modify paths to the path
-            paths = paths.map(path => path.path)
-            user.image = paths
+          
+            user.image = req.body.fileInfo
         }
         if(req.body.more){
             //more 

@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         default : ["User"]
     },
     image: {
-        type: [String],
+        type: [Object],
     },
     more: {
         type: String,

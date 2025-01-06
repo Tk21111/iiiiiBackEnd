@@ -1,6 +1,26 @@
 const How = require('../model/How');
 const User = require('../model/User');
 
+const { Storage } = require('@google-cloud/storage');
+const storage = new Storage({
+    projectId: 'back-iiiii', // Replace with your Google Cloud Project ID
+    keyFilename: 'back-iiiii-3f4f26c39c9e.json' // Path to your service account key file
+});
+const bucketName = 'back-iiiii-img';
+
+const deleteFromGCS = async (fileName) => {
+    try {
+        const file = storage.bucket(bucketName).file(fileName);
+        await file.delete();
+        console.log(`File ${fileName} deleted successfully.`);
+        return { success: true, message: `File ${fileName} deleted successfully.` };
+    } catch (error) {
+        console.error(`Failed to delete file ${fileName}:`, error);
+        return { success: false, message: `Failed to delete file ${fileName}: ${error.message}` };
+    }
+};
+
+
 /*
 const Hsethow = async (req, res) => {
     console.log("Request received:", req.method, req.url);
@@ -46,11 +66,8 @@ const Hsethow = async (req, res) => {
 */
 const Hsethow = async (req,res) => {
 
-    const file = req.files
 
-    const path = file.map(val => val?.path)
-
-    let  {tag , public ,des , name , ingredent}  = req.body;
+    let  {tag , public : view ,des , name , ingredent , fileInfo}  = req.body;
 
    
     if(!req.user) return res.sendStatus(401);
@@ -68,9 +85,9 @@ const Hsethow = async (req,res) => {
         name : name,
         tag : tag,
         ingredent : (JSON.parse(ingredent)),
-        public: public,
+        public: view,
         des : des ,
-        images : path || null
+        images : fileInfo || null
     });
     return res.json({"m" : "ok"})
     } catch (err) {
@@ -126,48 +143,51 @@ const Hupdatehow = async (req,res) => {
     }
 }
 
-const HdelHow = async (req, res) =>  {
+const HdelHow = async (req, res) => {
 
-    const {id} = req.body
+    const { id } = req.body;
 
-    if(!id) return res.sendStatus(400);
+    if (!id) return res.sendStatus(400); // Bad Request
 
     try {
-        const how = await  How.findById(id)
-        if(!how) return res.sendStatus(404);
+        // Fetch the document and validate existence
+        const how = await How.findById(id);
+        if (!how) return res.sendStatus(404); // Not Found
+
         const userHow = await User.findById(how.user);
+        if (userHow.username !== req.user) return res.sendStatus(403); // Forbidden
 
-        if(userHow.username !== req.user ) return res.sendStatus(403);
-        
-        how.images.forEach( p => {
-            fs.unlink(p, (err) => {
-                if (err) {
-                  // An error occurred while deleting the file
-                  if (err.code === 'ENOENT') {
-                    // The file does not exist
-                    console.error('The file does not exist');
-                  } else {
-                    // Some other error
-                    console.error(err.message);
-                  }
-                } else {
-                  // The file was deleted successfully
-                  console.log('The file was deleted');
-                }
-              });
-        });
-
-    const result = await how.deleteOne()
-
-    return res.json(result);
+        // Delete all associated images in Google Cloud Storage
 
 
+        if (how.images) {
+            const deleteResults = await Promise.all(
+                how.images.map(async (info) => {
+                    try {
+                        const result = await deleteFromGCS(info.fileName);
+                        return result.success; // Return whether deletion was successful
+                    } catch (err) {
+                        console.error(`Error deleting file ${info.fileName}:`, err);
+                        return false; // Return false if deletion fails
+                    }
+                })
+            );
 
+            // Check if all deletions succeeded
+            if (!deleteResults.every((result) => result)) {
+                return res.status(500).json({ message: "Failed to delete all images" });
+            }
+        }
+
+        // Delete the document itself
+        const result = await how.deleteOne();
+        return res.json(result);
     } catch (err) {
-        console.log(err + " ; delHow")
-        return res.json(err)
+        console.error("Error in HdelHow:", err);
+        return res.status(500).json({ error: err.message });
     }
-}
+};
+
 
 
 

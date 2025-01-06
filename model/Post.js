@@ -49,7 +49,7 @@ const postSchema = new mongoose.Schema({
         type : [String]
     },
     images: {
-        type: [String],
+        type: [Object],
         /*
         validate: {
             validator: function(arr) {

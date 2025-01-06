@@ -11,7 +11,7 @@ const howSchema = new mongoose.Schema({
     tag : [String],
     des : String,
     ingredent : [Object],
-    images : [String],
+    images : [Object],
 
 })
 

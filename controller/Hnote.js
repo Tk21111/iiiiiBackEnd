@@ -4,7 +4,24 @@ const Loca = require('../model/Loca')
 const multer = require('multer');
 const path = require('path');4
 const fs = require('fs')
+const { Storage } = require('@google-cloud/storage');
+const storage = new Storage({
+    projectId: 'back-iiiii', // Replace with your Google Cloud Project ID
+    keyFilename: 'back-iiiii-3f4f26c39c9e.json' // Path to your service account key file
+});
+const bucketName = 'back-iiiii-img';
 
+const deleteFromGCS = async (fileName) => {
+    try {
+        const file = storage.bucket(bucketName).file(fileName);
+        await file.delete();
+        console.log(`File ${fileName} deleted successfully.`);
+        return { success: true, message: `File ${fileName} deleted successfully.` };
+    } catch (error) {
+        console.error(`Failed to delete file ${fileName}:`, error);
+        return { success: false, message: `Failed to delete file ${fileName}: ${error.message}` };
+    }
+};
 
 const Hgetall = async (req, res) => {
 
@@ -67,7 +84,7 @@ const HgetallUser = async (req, res) => {
 const Hcreate = async (req, res) => {
     try {
         const notes = req.body.notes || []; //somehow this thing have obj null prototpe in it but still work i wander why
-        
+        const info = req.body.fileInfo
         if (Array.isArray(notes)) {
             for (let f ;f < notes.length; f++){
 
@@ -83,8 +100,14 @@ const Hcreate = async (req, res) => {
 
 
                 //file path is in req.files
-                const filePaths = req.files ? req.files.filter(file => file.fieldname.startsWith(`notes[${i}][files]`)).map(file => file.path) : [];
-                console.log(filePaths)
+
+                console.log(info)
+                const image = req.files ? info.filter(file => file.fieldName === `notes[${i}][files]`) : [];
+         
+
+               
+                console.log(image)
+                
                 await Note.create({
                     text: note.text,
                     count: note.count,
@@ -94,7 +117,7 @@ const Hcreate = async (req, res) => {
                     typeCount : note.typeCount,
                     countExp: note.countExp,
                     done: note.done,
-                    images: filePaths,
+                    images: image,
                     donate : note.donate
                 });
             }
@@ -179,45 +202,7 @@ const Hdelete = async (req , res) => {
 
     const deleteNote = await Note.findById(id).exec();
     const deleteLoca = await Loca.findOne({food : id }).exec();
-    if (deleteLoca){
-        //delete image for loca
-    deleteLoca.images.forEach( p => {
-        fs.unlink(p, (err) => {
-            if (err) {
-              // An error occurred while deleting the file
-              if (err.code === 'ENOENT') {
-                // The file does not exist
-                console.error('The file does not exist');
-              } else {
-                // Some other error
-                console.error(err.message);
-              }
-            } else {
-              // The file was deleted successfully
-              console.log('The file was deleted');
-            }
-          });
-    });
-    };
-    deleteNote.images.forEach( p => {
-        fs.unlink(p, (err) => {
-            if (err) {
-              // An error occurred while deleting the file
-              if (err.code === 'ENOENT') {
-                // The file does not exist
-                console.error('The file does not exist');
-              } else {
-                // Some other error
-                console.error(err.message);
-              }
-            } else {
-              // The file was deleted successfully
-              console.log('The file was deleted');
-            }
-          });
-    });
     
-
     if (!deleteNote?.user?.equals(foundUser._id)) {
         console.log('NOT FOUND')
         return res.status(401).json({ message: 'Unauthorized' });
@@ -226,7 +211,51 @@ const Hdelete = async (req , res) => {
     if (!deleteNote) return res.status(404).json({message : 'note is not found'});
 
     try {
-        await deleteLoca.deleteOne();
+        if (deleteNote.images) {
+            const deleteResults = await Promise.all(
+                deleteNote.images.map(async (info) => {
+                    try {
+                        const result = await deleteFromGCS(info.fileName);
+                        return result.success; // Return whether deletion was successful
+                    } catch (err) {
+                        console.error(`Error deleting file ${info.fileName}:`, err);
+                        return false; // Return false if deletion fails
+                    }
+                })
+            );
+
+            // Check if all deletions succeeded
+            if (!deleteResults.every((result) => result)) {
+                return res.status(500).json({ message: "Failed to delete all images" });
+            }
+        }
+        if (deleteLoca){
+          //delete image for loca
+          if (deleteLoca.images) {
+            const deleteResults = await Promise.all(
+              deleteLoca.images.map(async (info) => {
+                    try {
+                        const result = await deleteFromGCS(info.fileName);
+                        return result.success; // Return whether deletion was successful
+                    } catch (err) {
+                        console.error(`Error deleting file ${info.fileName}:`, err);
+                        return false; // Return false if deletion fails
+                    }
+                })
+            );
+  
+            // Check if all deletions succeeded
+            if (!deleteResults.every((result) => result)) {
+                return res.status(500).json({ message: "Failed to delete all images" });
+            }
+        }
+  
+          
+          await deleteLoca.deleteOne();
+     
+      
+      }
+        
     } catch {
         console.log('No location post boned')
     }

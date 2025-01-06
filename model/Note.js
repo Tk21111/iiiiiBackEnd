@@ -37,7 +37,7 @@ const noteSchema = new mongoose.Schema({
         default : false
     },
     images : {
-        type : [String]
+        type : [Object]
     }
 },
     {
