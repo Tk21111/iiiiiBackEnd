@@ -7,7 +7,7 @@ const fs = require('fs')
 const { Storage } = require('@google-cloud/storage');
 const storage = new Storage({
     projectId: 'back-iiiii', // Replace with your Google Cloud Project ID
-    keyFilename: 'back-iiiii-3f4f26c39c9e.json' // Path to your service account key file
+    keyFilename: 'back-iiiii-d217bbb76bed.json' // Path to your service account key file
 });
 const bucketName = 'back-iiiii-img';
 
@@ -82,8 +82,12 @@ const HgetallUser = async (req, res) => {
 //@ user , context , count , done 
 //@post
 const Hcreate = async (req, res) => {
+
+    console.log(req.body.notes)
     try {
         const notes = req.body.notes || []; //somehow this thing have obj null prototpe in it but still work i wander why
+
+        console.log(req.body)
         const info = req.body.fileInfo
         if (Array.isArray(notes)) {
             for (let f ;f < notes.length; f++){
@@ -93,7 +97,7 @@ const Hcreate = async (req, res) => {
 
                 const note = notes[i];
                 //nice check user in note idk why but think past me (in process of org donate get food to appear)
-                const foundUser = await User.findOne({ username: note.username }).lean().exec();
+                const foundUser = await User.findOne({ username: req.user }).lean().exec();
                 if (!foundUser) {
                     return res.status(401).json({ message: 'User not found' });
                 }
@@ -101,7 +105,7 @@ const Hcreate = async (req, res) => {
 
                 //file path is in req.files
 
-                console.log(info)
+       
                 const image = req.files ? info.filter(file => file.fieldName === `notes[${i}][files]`) : [];
          
 
@@ -110,13 +114,12 @@ const Hcreate = async (req, res) => {
                 
                 await Note.create({
                     text: note.text,
-                    count: note.count,
+                    count: note.count || 1,
                     user: foundUser._id,
                     timeOut: note.date,
                     tag: note.tag,
-                    typeCount : note.typeCount,
-                    countExp: note.countExp,
-                    done: note.done,
+                    typeCount : note.typeCount || "",
+                    countExp: note.countExp || 0,
                     images: image,
                     donate : note.donate
                 });
@@ -131,7 +134,35 @@ const Hcreate = async (req, res) => {
     }
 };
 
+const HcreateJazer = async (req , res) => {
 
+  console.log(req)
+  try {
+
+    const note = req.body;
+
+    if(!note) return res.status(400).json({"message" : "bad req"});
+
+    const user = await User.findOne({username : req.user}).exec();
+
+    if(!user ) return res.status(401).json({"message" : "not found user"});
+
+    await Note.create({
+
+      user : user,
+      text : note.text || "" ,
+      count : note.count || 1 ,
+      timeOut : note.timeOut ,
+      typeCount : note.typeCount || "" 
+
+    })
+
+    return res.status(200).json({"message" : "sucessfully create"});
+  } catch (err) {
+    console.log(err + " ; HcreateJazer")
+    return res.status(500).json({"err" : err});
+  }
+}
 //@note_id , text ,count , countExp ,date tag , done
 //@patch
 
@@ -266,5 +297,5 @@ const Hdelete = async (req , res) => {
     //res.json({message : id + 'note deleted'})
 
 }
-module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HgetallUser };
+module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HgetallUser , HcreateJazer };
 

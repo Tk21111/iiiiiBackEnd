@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const Hauth = async(req, res) => {
+
+    console.log(req.body)
     const { user , pwd} = req.body;
     if (!user || !pwd) return res.status(400).json({ 'message': 'Username and password are required ' });
     const found = await User.findOne({ username: user }).exec();
@@ -32,7 +34,7 @@ const Hauth = async(req, res) => {
                 { expiresIn: '7d' });
 
               
-
+        console.log({ accessToken , refreshToken , image : (found?.image || null ) , aka : (found?.aka) || null});
         res.status(200).json({ accessToken , refreshToken , image : (found?.image || null ) , aka : (found?.aka) || null});
     } else {
         console.log('!match')

@@ -11,7 +11,7 @@ const { Storage } = require('@google-cloud/storage');
 // Google Cloud Storage configuration
 const storage = new Storage({
     projectId: 'back-iiiii', // Replace with your Google Cloud Project ID
-    keyFilename: 'back-iiiii-3f4f26c39c9e.json' // Path to your service account key file
+    keyFilename: 'back-iiiii-d217bbb76bed.json' // Path to your service account key file
 });
 
 const bucketName = 'back-iiiii-img'; // Replace with your Cloud Storage bucket name
