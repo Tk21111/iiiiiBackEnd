@@ -7,10 +7,10 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const { Storage } = require('@google-cloud/storage');
 
+const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+
 // Google Cloud Storage configuration
-const storage = new Storage({
-    projectId: 'back-iiiii', // Replace with your Google Cloud Project ID
-    keyFilename: 'back-iiiii-d217bbb76bed.json' // Path to your service account key file
+const storage = new Storage({credentials // Path to your service account key file
 });
 
 const bucketName = 'back-iiiii-img'; // Replace with your Cloud Storage bucket name
@@ -22,34 +22,51 @@ const multerStorage = multer.memoryStorage();
 const upload = multer({ storage: multerStorage });
 
 const uploadToGCS = async (file, userId) => {
+    if (!file || !file.originalname) {
+        throw new Error("Invalid file provided");
+    }
+
     const ext = path.extname(file.originalname);
     const uniqueName = `${userId}/${uuidv4()}${ext}`;
     const blob = bucket.file(uniqueName);
 
-    const blobStream = blob.createWriteStream({
-        resumable: false,
-        contentType: file.mimetype,
-    });
+    console.log(`Uploading: ${uniqueName}, MIME: ${file.mimetype}`);
 
     return new Promise((resolve, reject) => {
-        blobStream.on('error', (err) => reject(err));
-        blobStream.on('finish', async () => {
-           
-            await blob.makePublic();
-            const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
-            resolve({ uniqueName, publicUrl });
+        const blobStream = blob.createWriteStream({
+            resumable: false,
+            contentType: file.mimetype,
         });
+
+        blobStream.on('error', (err) => {
+            console.error("GCS Upload Error:", err);
+            reject(err);
+        });
+
+        blobStream.on('finish', async () => {
+            try {
+                await blob.makePublic();
+                const publicUrl = `https://storage.googleapis.com/${bucketName}/${blob.name}`;
+                resolve({ uniqueName, publicUrl });
+            } catch (err) {
+                reject(new Error("Failed to make file public: " + err.message));
+            }
+        });
+
         blobStream.end(file.buffer);
     });
 };
 
+
 router.route('/create')
     .post(upload.array('images'), async (req, res, next) => {
         try {
+            //console.log(req)
             const userId = req.user; // Assuming `req.user` contains user ID or identifier
             const filePromises = req.files.map(file => uploadToGCS(file, userId));
             const uploadedFiles = await Promise.all(filePromises);
 
+            console.log("req")
             // Save file information back to req
             req.body.fileInfo = uploadedFiles.map(({ uniqueName, publicUrl }) => ({
                 fileName: uniqueName,

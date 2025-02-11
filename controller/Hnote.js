@@ -107,11 +107,7 @@ const Hcreate = async (req, res) => {
 
        
                 const image = req.files ? info.filter(file => file.fieldName === `notes[${i}][files]`) : [];
-         
-
-               
-                console.log(image)
-                
+                         
                 await Note.create({
                     text: note.text,
                     count: note.count || 1,
@@ -130,7 +126,7 @@ const Hcreate = async (req, res) => {
         }
     } catch (err) {
         console.error('Error creating notes:', err);
-        return res.status(500).json({ message: 'Failed to create notes' });
+        //return res.status(500).json({ message: 'Failed to create notes' });
     }
 };
 

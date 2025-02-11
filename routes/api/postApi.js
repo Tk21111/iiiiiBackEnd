@@ -6,14 +6,13 @@ const multer = require("multer");
 const { pathChecker } = require("./pathFindder");
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
-
-
 const { Storage } = require('@google-cloud/storage');
 
+
+const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+
 // Google Cloud Storage configuration
-const storage = new Storage({
-    projectId: 'back-iiiii', // Replace with your Google Cloud Project ID
-    keyFilename: 'back-iiiii-d217bbb76bed.json' // Path to your service account key file
+const storage = new Storage({credentials // Path to your service account key file
 });
 
 const bucketName = 'back-iiiii-img'; // Replace with your Cloud Storage bucket name
