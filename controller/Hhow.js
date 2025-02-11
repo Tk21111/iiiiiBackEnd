@@ -1,10 +1,10 @@
 const How = require('../model/How');
 const User = require('../model/User');
 
-const { Storage } = require('@google-cloud/storage');
-const storage = new Storage({
-    projectId: 'back-iiiii', // Replace with your Google Cloud Project ID
-    keyFilename: 'back-iiiii-d217bbb76bed.json' // Path to your service account key file
+const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+
+// Google Cloud Storage configuration
+const storage = new Storage({credentials // Path to your service account key file
 });
 const bucketName = 'back-iiiii-img';
 
