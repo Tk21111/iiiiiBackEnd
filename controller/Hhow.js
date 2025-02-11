@@ -3,6 +3,7 @@ const User = require('../model/User');
 
 const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
 
+const { Storage } = require('@google-cloud/storage');
 // Google Cloud Storage configuration
 const storage = new Storage({credentials // Path to your service account key file
 });
