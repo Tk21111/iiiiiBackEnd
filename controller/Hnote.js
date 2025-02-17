@@ -218,85 +218,88 @@ const Hupdate = async (req , res ) => {
 
 //@username ,note_id
 //@delete
-const Hdelete = async (req , res) => {
-    const {id} = req.body;
+const Hdelete = async (req, res) => {
+    const { id } = req.body;
     const user = req.user;
 
-    //console.log('Note delete func')
-    if (!user || !id) return res.status(401).json({message : 'bad request'});
-
-    const foundUser = await User.findOne({ username: user }).lean().exec();
-    if (!foundUser) return res.status(401).json({ message: 'User not found' });
-
-    const deleteNote = await Note.findById(id).exec();
-    const deleteLoca = await Loca.findOne({food : id }).exec();
-    
-    if (!deleteNote?.user?.equals(foundUser._id)) {
-        console.log('NOT FOUND')
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
-
-    if (!deleteNote) return res.status(404).json({message : 'note is not found'});
+    if (!user || !id) return res.status(401).json({ message: 'Bad request' });
 
     try {
+        const foundUser = await User.findOne({ username: user }).lean().exec();
+        if (!foundUser) return res.status(401).json({ message: 'User not found' });
+
+        const deleteNote = await Note.findById(id).exec();
+        const deleteLoca = await Loca.findOne({ food: id }).exec();
+
+        if (!deleteNote?.user?.equals(foundUser._id)) {
+            console.log('NOT FOUND');
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        if (!deleteNote) return res.status(404).json({ message: 'Note is not found' });
+
+        // Optional: Debug logging to check the images and loca data
+        console.log('Deleting Note:', deleteNote);
+        console.log('Associated Loca:', deleteLoca);
+
+        // Delete images logic (if applicable)
         /*
         if (deleteNote.images) {
             const deleteResults = await Promise.all(
                 deleteNote.images.map(async (info) => {
                     try {
                         const result = await deleteFromGCS(info.fileName);
-                        return result.success; // Return whether deletion was successful
+                        return result.success;
                     } catch (err) {
                         console.error(`Error deleting file ${info.fileName}:`, err);
-                        return false; // Return false if deletion fails
+                        return false;
                     }
                 })
             );
 
-            // Check if all deletions succeeded
             if (!deleteResults.every((result) => result)) {
                 return res.status(500).json({ message: "Failed to delete all images" });
             }
         }
+        */
+
+        if (deleteLoca) {
+            // Optional: Delete images associated with the loca (if any)
+            /*
+            if (deleteLoca.images) {
+                const deleteResults = await Promise.all(
+                    deleteLoca.images.map(async (info) => {
+                        try {
+                            const result = await deleteFromGCS(info.fileName);
+                            return result.success;
+                        } catch (err) {
+                            console.error(`Error deleting file ${info.fileName}:`, err);
+                            return false;
+                        }
+                    })
+                );
+
+                if (!deleteResults.every((result) => result)) {
+                    return res.status(500).json({ message: "Failed to delete all loca images" });
+                }
+            }
             */
-        if (deleteLoca){
-          //delete image for loca
-          /*
-          if (deleteLoca.images) {
-            const deleteResults = await Promise.all(
-              deleteLoca.images.map(async (info) => {
-                    try {
-                        const result = await deleteFromGCS(info.fileName);
-                        return result.success; // Return whether deletion was successful
-                    } catch (err) {
-                        console.error(`Error deleting file ${info.fileName}:`, err);
-                        return false; // Return false if deletion fails
-                    }
-                })
-            );
-  
-            // Check if all deletions succeeded
-            if (!deleteResults.every((result) => result)) {
-                return res.status(500).json({ message: "Failed to delete all images" });
-            }
-                */
+            await deleteLoca.deleteOne();
         }
-  
-          
-          await deleteLoca.deleteOne();
-     
-      
-      }
-        
-    } catch {
-        console.log('No location post boned')
-    }
-    
-    const result = await deleteNote.deleteOne();
-    //console.log(result)
-    res.status(200).json({message : "deleted"})
-    //res.json({message : id + 'note deleted'})
 
-}
+        // Now, delete the note itself
+        await deleteNote.deleteOne();
+
+        return res.status(200).json({ message: 'Deleted successfully' });
+
+    } catch (err) {
+        console.error('Error during deletion process:', err);
+        return res.status(500).json({ message: 'An error occurred while deleting' });
+    } finally {
+        // Optional: Add any cleanup or logging actions here if needed.
+        console.log('Deletion process finished');
+    }
+};
+
 module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HgetallUser , HcreateJazer };
 
