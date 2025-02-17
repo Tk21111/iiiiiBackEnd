@@ -288,6 +288,7 @@ const HdelPost = async (req, res) =>  {
 
         if(!post) return res.sendStatus(404);
 
+        /*
         if (post.images) {
             const deleteResults = await Promise.all(
                 post.images.map(async (info) => {
@@ -306,6 +307,7 @@ const HdelPost = async (req, res) =>  {
                 return res.status(500).json({ message: "Failed to delete all images" });
             }
         }
+        */
 
 
     

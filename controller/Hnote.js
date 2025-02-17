@@ -239,6 +239,7 @@ const Hdelete = async (req , res) => {
     if (!deleteNote) return res.status(404).json({message : 'note is not found'});
 
     try {
+        /*
         if (deleteNote.images) {
             const deleteResults = await Promise.all(
                 deleteNote.images.map(async (info) => {
@@ -257,6 +258,7 @@ const Hdelete = async (req , res) => {
                 return res.status(500).json({ message: "Failed to delete all images" });
             }
         }
+            
         if (deleteLoca){
           //delete image for loca
           if (deleteLoca.images) {
@@ -277,6 +279,7 @@ const Hdelete = async (req , res) => {
                 return res.status(500).json({ message: "Failed to delete all images" });
             }
         }
+            */
   
           
           await deleteLoca.deleteOne();

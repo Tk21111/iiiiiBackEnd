@@ -160,7 +160,7 @@ const HdelHow = async (req, res) => {
 
         // Delete all associated images in Google Cloud Storage
 
-
+        /*
         if (how.images) {
             const deleteResults = await Promise.all(
                 how.images.map(async (info) => {
@@ -179,6 +179,7 @@ const HdelHow = async (req, res) => {
                 return res.status(500).json({ message: "Failed to delete all images" });
             }
         }
+            */
 
         // Delete the document itself
         const result = await how.deleteOne();
