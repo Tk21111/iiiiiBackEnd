@@ -258,9 +258,10 @@ const Hdelete = async (req , res) => {
                 return res.status(500).json({ message: "Failed to delete all images" });
             }
         }
-            
+            */
         if (deleteLoca){
           //delete image for loca
+          /*
           if (deleteLoca.images) {
             const deleteResults = await Promise.all(
               deleteLoca.images.map(async (info) => {
@@ -278,10 +279,11 @@ const Hdelete = async (req , res) => {
             if (!deleteResults.every((result) => result)) {
                 return res.status(500).json({ message: "Failed to delete all images" });
             }
-        }*/
+                */
+        }
   
           
-        await deleteLoca.deleteOne();
+          await deleteLoca.deleteOne();
      
       
       }
