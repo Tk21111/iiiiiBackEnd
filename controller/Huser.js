@@ -1,5 +1,9 @@
 const User = require('../model/User');
+const How = require('../model/How')
+const Loca = require('../model/Loca')
 const Post = require('../model/Post');
+
+const Note = require('../model/Note')
 
 
 const updateProfile = async (req,res) => {
@@ -122,6 +126,40 @@ const getNoti = async (req, res) => {
     }
 };
 
+//@user 
+//@patch
+const HgetallUser = async (req, res) => {
+    const nameId = req.body.user;
+    if (!nameId) return res.status(400).json({ message: 'Missing required fields' });
+
+    try {
+
+        let note  = await Note.find({user : nameId});
+        let loca  = await Loca.find({user : nameId});
+        let how  = await How.find({user : nameId});
+        let post  = await Post.find({user : nameId});
+
+        //convert list note to amount
+        let amountNote = 0
+        let amountNoteExp = 0
+
+        for (let i of note){
+            amountNote+= i.count[0] || 0;
+            amountNoteExp+= i.countExp[i.countExp.length - 1] || 0
+        } 
+
+        note = [amountNote , amountNoteExp]
+        loca = loca?.length || 0
+
+        res.json([note || ["null"], loca , how || ["null"] , post || ["null"]])
+        //console.log(result)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 
 
-module.exports = {updateProfile ,getUser , getOrg , setNoti , getNoti}
+};
+
+
+module.exports = {updateProfile ,getUser , getOrg , setNoti , getNoti , HgetallUser}

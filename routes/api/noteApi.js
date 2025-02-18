@@ -47,10 +47,6 @@ const uploadToGCS = async (file, userId) => {
     });
 };
 
-router.route('/')
-    .patch(NoteController.HgetallUser);
-
-
 router.route('/create')
 //it working idk why prv ver upload.array('images')
     .post(upload.any(), async (req, res, next) => {

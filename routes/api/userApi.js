@@ -78,4 +78,7 @@ router.route('/noti')
 router.route('/noti')
     .get(UserController.getNoti);
 
+router.route('/info')
+    .patch(UserController.HgetallUser);
+
 module.exports = router;

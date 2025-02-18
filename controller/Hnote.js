@@ -59,25 +59,7 @@ const Hgetall = async (req, res) => {
 
     
 };
-//@user 
-//@patch
-const HgetallUser = async (req, res) => {
-    const name = req.user;
-    if (!name) return res.status(400).json({ message: 'Missing required fields' });
 
-    try {
-        const userId = await User.findOne({ username: name }).select('-__v').exec();
-        const result  = await Note.find({user : userId});
-
-        res.json(result)
-        //console.log(result)
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: 'Internal server error' });
-    }
-
-
-};
 
 
 //@ user , context , count , done 
@@ -301,5 +283,5 @@ const Hdelete = async (req, res) => {
     }
 };
 
-module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HgetallUser , HcreateJazer };
+module.exports = { Hcreate , Hdelete , Hupdate , Hgetall , HcreateJazer };
 
