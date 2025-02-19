@@ -81,4 +81,7 @@ router.route('/noti')
 router.route('/info')
     .patch(UserController.HgetallUser);
 
+router.route('/get/user')
+    .get(UserController.GetAllUser)
+
 module.exports = router;

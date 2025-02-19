@@ -72,6 +72,17 @@ const getOrg = async (req , res) => {
         res.status(500).json({"message" : err + "getOrg"})
     }
 };
+const GetAllUser = async (req , res) => {
+
+    try {
+        const user = await User.find();
+        res.json(user);
+
+    } catch (err) {
+    
+        res.status(500).json({"message" : err + "getOrg"})
+    }
+};
 
 const setNoti = async (req, res) => {
     const { noti } = req.body;
@@ -162,4 +173,4 @@ const HgetallUser = async (req, res) => {
 };
 
 
-module.exports = {updateProfile ,getUser , getOrg , setNoti , getNoti , HgetallUser}
+module.exports = {updateProfile ,getUser , getOrg , setNoti , getNoti , HgetallUser , GetAllUser}
