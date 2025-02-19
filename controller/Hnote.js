@@ -38,6 +38,31 @@ const Hgetall = async (req, res) => {
           return res.status(400).json({ message: 'No notes found' })
       }
 
+      const date = new Date();
+
+      for (let [index, note] of notes.entries()) {
+          if (!note.timeOut) continue; // Skip if timeOut is undefined/null
+
+          const dateTimeOut = new Date(note.timeOut);
+          if (dateTimeOut < date && !note.done) {
+              // Ensure countExp and count arrays exist
+              if (!Array.isArray(note.countExp)) note.countExp = [];
+              if (!Array.isArray(note.count)) note.count = [];
+
+              const lastCountExp = note.countExp.length ? note.countExp[note.countExp.length - 1] : 0;
+              const lastCount = note.count.length ? note.count[note.count.length - 1] : 0;
+
+              note.countExp.push(lastCountExp + lastCount - lastCountExp);
+              note.count.push(lastCount);
+              note.typeCount = "undefined";
+              note.done = true;
+          }
+      }
+
+      // If notes is a Mongoose collection, update in bulk
+      await Promise.all(notes.map(note => note.save())); // Save all notes
+
+
       res.json(notes)
     } catch (err) {
       console.log(err + " ; Hgetall")
@@ -185,6 +210,8 @@ const Hupdate = async (req , res ) => {
         }
         if (typeCount !== undefined) {
           foundNote.typeCount = typeCount
+        } else if (foundNote.typeCount === undefined) {
+          foundNote.typeCount = "undefined";
         }
 
       foundNote.save();
