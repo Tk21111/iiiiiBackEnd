@@ -13,6 +13,9 @@ const howSchema = new mongoose.Schema({
     ingredent : [Object],
     images : [Object],
 
-})
+}, {
+    timestamps : true
+}
+)
 
 module.exports = mongoose.model('How' , howSchema)

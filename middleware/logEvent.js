@@ -9,6 +9,7 @@ const logEvents = async(message) => {
         const datetime = `${format(new Date(), 'yyyyMMdd\tHH:MM:ss')}`;
         const logItem = `${datetime}\t${uuid()}\t${message}\n`;
         console.log(logItem);
+        /*
         try {
             if (!fs.existsSync(path.join(__dirname, '..', 'log'))) {
                 // if don't have logs file make one
@@ -20,7 +21,8 @@ const logEvents = async(message) => {
         } catch (err) {
             console.log(err)
         }
-
+            
+        */
     }
     // orgin === google.com maybe
     //url === index page or something 
