@@ -34,8 +34,8 @@ const Hauth = async(req, res) => {
                 { expiresIn: '7d' });
 
               
-        console.log({ accessToken , refreshToken , image : (found?.image || null ) , aka : (found?.aka) || null});
-        res.status(200).json({ accessToken , refreshToken , image : (found?.image || null ) , aka : (found?.aka) || null});
+        console.log({ roles, accessToken , refreshToken , image : (found?.image || null ) , aka : (found?.aka) || null});
+        res.status(200).json({ accessToken , refreshToken , image : (found?.image || null ) , aka : (found?.aka) || null , roles});
     } else {
         console.log('!match')
         res.sendStatus(401);
