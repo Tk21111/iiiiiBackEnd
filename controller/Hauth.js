@@ -24,14 +24,14 @@ const Hauth = async(req, res) => {
                 }
             }, 
             process.env.ACCESS_TOKEN, 
-            { expiresIn: '1d' });
+            { expiresIn: '365d' });
 
 
         const refreshToken = jwt.sign(
             {
                  "username": found.username 
                 }, process.env.REFRESH_TOKEN, 
-                { expiresIn: '7d' });
+                { expiresIn: '515151515d' });
 
               
         console.log({ roles, accessToken , refreshToken , image : (found?.image || null ) , aka : (found?.aka) || null});

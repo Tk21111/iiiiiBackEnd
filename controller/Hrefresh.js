@@ -28,7 +28,7 @@ const Hrefresh = (req, res) => {
                     }
                 },
                 process.env.ACCESS_TOKEN,
-                { expiresIn: '1d' }
+                { expiresIn: '365d' }
             )
 
             res.status(200).json({ accessToken , image : (found?.image || null ) , aka : (found?.aka) || null});
